@@ -181,7 +181,7 @@ export function ArticleViewer({
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="prose prose-slate max-w-none">
+                <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="whitespace-pre-wrap text-foreground leading-relaxed">
                     {highlightTerms(article.content)}
                   </p>
@@ -209,7 +209,7 @@ export function ArticleViewer({
 
         {filteredArticles.length === 0 && (
           <Card>
-            <CardContent className="py-12 text-center text-slate-500">
+            <CardContent className="py-12 text-center text-muted-foreground">
               검색 결과가 없습니다.
             </CardContent>
           </Card>
@@ -241,7 +241,7 @@ function HangItem({ hang }: { hang: ArticleHang }) {
 
   return (
     <div className="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
-      <div className="text-sm text-muted-foreground">
+      <div className="text-sm text-foreground/80 dark:text-foreground/90">
         <span className="font-medium text-foreground">
           {circledNumber(num)}
         </span>{" "}
@@ -257,7 +257,7 @@ function HangItem({ hang }: { hang: ArticleHang }) {
             return (
               <li
                 key={ho.number}
-                className="text-sm text-muted-foreground pl-3 border-l border-slate-300 dark:border-slate-600"
+                className="text-sm text-foreground/75 dark:text-foreground/85 pl-3 border-l border-slate-300 dark:border-slate-600"
               >
                 <span className="font-medium text-foreground">
                   {hoLabel(hoNum)}.

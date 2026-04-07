@@ -26,7 +26,7 @@ export function ThreeTierView({ rows }: { rows: ThreeTierRow[] }) {
                 <div className="font-medium text-blue-700 dark:text-blue-300 mb-1">
                   {row.lawJo}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-400">{row.lawContent}</div>
+                <div className="text-sm text-slate-700 dark:text-slate-300">{row.lawContent}</div>
               </td>
               <td className="border-y border-slate-200 dark:border-slate-700 text-center text-slate-400 dark:text-slate-500 text-xs select-none" aria-hidden="true">
                 →
@@ -37,7 +37,7 @@ export function ThreeTierView({ rows }: { rows: ThreeTierRow[] }) {
                     <div className="font-medium text-emerald-700 dark:text-emerald-300 mb-1">
                       {row.decreeJo}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-slate-700 dark:text-slate-300">
                       {row.decreeContent}
                     </div>
                   </>
@@ -56,7 +56,7 @@ export function ThreeTierView({ rows }: { rows: ThreeTierRow[] }) {
                     <div className="font-medium text-amber-700 dark:text-amber-300 mb-1">
                       {row.ruleJo}
                     </div>
-                    <div className="text-sm text-slate-600 dark:text-slate-400">
+                    <div className="text-sm text-slate-700 dark:text-slate-300">
                       {row.ruleContent}
                     </div>
                   </>

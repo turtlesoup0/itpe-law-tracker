@@ -7,16 +7,16 @@ import { useLLMSettings } from "@/lib/llm-settings";
 
 function getChangeColor(type: string): { bg: string; border: string; badge: string } {
   switch (type) {
-    case "신설": return { bg: "bg-green-50", border: "border-green-200", badge: "bg-green-100 text-green-700" };
-    case "삭제": return { bg: "bg-red-50", border: "border-red-200", badge: "bg-red-100 text-red-700" };
-    case "변경": return { bg: "bg-amber-50", border: "border-amber-200", badge: "bg-amber-100 text-amber-700" };
-    default: return { bg: "bg-slate-50", border: "border-slate-200", badge: "bg-slate-100 text-slate-700" };
+    case "신설": return { bg: "bg-green-50 dark:bg-green-950", border: "border-green-200 dark:border-green-800", badge: "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300" };
+    case "삭제": return { bg: "bg-red-50 dark:bg-red-950", border: "border-red-200 dark:border-red-800", badge: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300" };
+    case "변경": return { bg: "bg-amber-50 dark:bg-amber-950", border: "border-amber-200 dark:border-amber-800", badge: "bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300" };
+    default: return { bg: "bg-slate-50 dark:bg-slate-900", border: "border-slate-200 dark:border-slate-700", badge: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" };
   }
 }
 
 function highlightDiff(oldText: string, newText: string): { oldHtml: string; newHtml: string } {
-  if (!oldText) return { oldHtml: "", newHtml: `<span class="bg-green-200 underline">${newText}</span>` };
-  if (!newText) return { oldHtml: `<span class="bg-red-200 line-through">${oldText}</span>`, newHtml: "" };
+  if (!oldText) return { oldHtml: "", newHtml: `<span class="bg-green-200 dark:bg-green-800/60 underline">${newText}</span>` };
+  if (!newText) return { oldHtml: `<span class="bg-red-200 dark:bg-red-800/60 line-through">${oldText}</span>`, newHtml: "" };
 
   const oldWords = oldText.split(/(\s+)/);
   const newWords = newText.split(/(\s+)/);
@@ -33,8 +33,8 @@ function highlightDiff(oldText: string, newText: string): { oldHtml: string; new
       oldHtml += ow;
       newHtml += nw;
     } else {
-      if (ow) oldHtml += `<span class="bg-red-200 line-through rounded px-0.5">${ow}</span>`;
-      if (nw) newHtml += `<span class="bg-green-200 underline rounded px-0.5">${nw}</span>`;
+      if (ow) oldHtml += `<span class="bg-red-200 dark:bg-red-800/60 line-through rounded px-0.5">${ow}</span>`;
+      if (nw) newHtml += `<span class="bg-green-200 dark:bg-green-800/60 underline rounded px-0.5">${nw}</span>`;
     }
   }
 

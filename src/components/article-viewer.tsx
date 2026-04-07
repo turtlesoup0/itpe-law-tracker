@@ -25,6 +25,24 @@ function hoLabel(n: number): string {
   return HO_LABELS[n - 1] ?? `${n}`;
 }
 
+/** 원문자(①②...) 또는 숫자 문자열 → 정수 변환 */
+function parseHangNumber(raw: string): number {
+  // 원문자 → 인덱스
+  const idx = CIRCLED_NUMBERS.indexOf(raw);
+  if (idx >= 0) return idx + 1;
+  // 숫자 문자열
+  const n = parseInt(raw, 10);
+  return isNaN(n) ? 1 : n;
+}
+
+/** 호 라벨(가나다...) 또는 숫자 문자열 → 정수 변환 */
+function parseHoNumber(raw: string): number {
+  const idx = HO_LABELS.indexOf(raw);
+  if (idx >= 0) return idx + 1;
+  const n = parseInt(raw, 10);
+  return isNaN(n) ? 1 : n;
+}
+
 export function ArticleViewer({
   articles,
   lawName,
@@ -109,8 +127,8 @@ export function ArticleViewer({
 
   return (
     <div className="relative flex flex-col md:flex-row gap-4" style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}>
-      {/* 좌측 목차 — 독립 스크롤 */}
-      <div className="w-full md:w-64 md:shrink-0 border rounded-lg bg-card flex flex-col overflow-hidden">
+      {/* 좌측 목차 — 독립 스크롤 (모바일: 최대 40vh) */}
+      <div className="w-full max-h-[40vh] md:max-h-none md:w-64 md:shrink-0 border rounded-lg bg-card flex flex-col overflow-hidden">
         <div className="p-3 border-b bg-muted shrink-0">
           <h3 className="font-semibold text-sm text-foreground">
             {lawName} 조문
@@ -148,8 +166,8 @@ export function ArticleViewer({
         </nav>
       </div>
 
-      {/* 우측 본문 — 전체 조문 스크롤 */}
-      <div ref={contentRef} className="flex-1 overflow-y-auto space-y-6 pr-1">
+      {/* 우측 본문 — 전체 조문 스크롤 (모바일: 최소 높이 확보) */}
+      <div ref={contentRef} className="flex-1 min-h-[50vh] md:min-h-0 overflow-y-auto space-y-6 pr-1">
         {filteredArticles.map((article) => (
           <div
             key={article.jo}
@@ -219,13 +237,13 @@ export function ArticleViewer({
 function HangItem({ hang }: { hang: ArticleHang }) {
   const hasHo = hang.ho && hang.ho.length > 0;
   const depthLabel = hasHo ? "조 > 항 > 호" : "조 > 항";
-  const num = parseInt(hang.number, 10);
+  const num = parseHangNumber(hang.number);
 
   return (
     <div className="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
       <div className="text-sm text-muted-foreground">
         <span className="font-medium text-foreground">
-          {circledNumber(isNaN(num) ? 1 : num)}
+          {circledNumber(num)}
         </span>{" "}
         {highlightTerms(hang.content)}
         <span className="ml-2 text-[10px] text-muted-foreground/60 select-none">
@@ -235,14 +253,14 @@ function HangItem({ hang }: { hang: ArticleHang }) {
       {hasHo && (
         <ol className="mt-1 ml-4 space-y-1 list-none pl-0">
           {hang.ho!.map((ho) => {
-            const hoNum = parseInt(ho.number, 10);
+            const hoNum = parseHoNumber(ho.number);
             return (
               <li
                 key={ho.number}
                 className="text-sm text-muted-foreground pl-3 border-l border-slate-300 dark:border-slate-600"
               >
                 <span className="font-medium text-foreground">
-                  {hoLabel(isNaN(hoNum) ? 1 : hoNum)}.
+                  {hoLabel(hoNum)}.
                 </span>{" "}
                 {highlightTerms(ho.content)}
               </li>

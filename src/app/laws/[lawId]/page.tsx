@@ -11,6 +11,7 @@ import { LawHierarchyGraph } from "@/components/law-hierarchy-graph";
 import { ThreeTierView } from "@/components/three-tier-view";
 import { ArticleViewer } from "@/components/article-viewer";
 import { AdminRuleList } from "@/components/admin-rule-list";
+import { TtaTermWidget } from "@/components/tta-term-widget";
 import type { HierarchyNode } from "@/types/law";
 
 // ---------------------------------------------------------------------------
@@ -217,6 +218,7 @@ export default async function LawDetailPage({
           <TabsTrigger value="three-tier">3단 비교</TabsTrigger>
           <TabsTrigger value="related">관련 법령</TabsTrigger>
           <TabsTrigger value="amendments">개정 이력</TabsTrigger>
+          <TabsTrigger value="terms">용어사전</TabsTrigger>
         </TabsList>
 
         <TabsContent value="hierarchy">
@@ -325,6 +327,20 @@ export default async function LawDetailPage({
             </CardHeader>
             <CardContent>
               <AmendmentTimeline amendments={amendments} lawId={lawId} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="terms">
+          <Card>
+            <CardHeader>
+              <CardTitle>정보통신 용어사전</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                TTA 정보통신용어사전에서 IT 전문 용어의 정의를 검색합니다.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <TtaTermWidget />
             </CardContent>
           </Card>
         </TabsContent>

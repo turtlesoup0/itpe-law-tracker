@@ -1,0 +1,148 @@
+[
+  {
+    "lawJo": "제2조",
+    "lawContent": "정의 - 신용정보, 개인신용정보 등 용어 정의",
+    "decreeJo": "시행령 제2조",
+    "decreeContent": "정의 - 특정 신용정보주체 식별정보, 개인식별번호, 거래내용 정보 등 세부 정의"
+  },
+  {
+    "lawJo": "제4조",
+    "lawContent": "신용정보업 등의 허가 - 금융위원회 허가 필요",
+    "decreeJo": "시행령 제4조",
+    "decreeContent": "영업의 허가 신청 - 신청서 및 첨부서류",
+    "ruleJo": "시행규칙 제3조",
+    "ruleContent": "허가심사 절차 - 사실확인, 의견수렴, 공청회"
+  },
+  {
+    "lawJo": "제5조",
+    "lawContent": "신용정보업 등의 허가를 받을 수 있는 자 - 출자요건",
+    "decreeJo": "시행령 제5조",
+    "decreeContent": "금융기관 등의 범위, 전문개인신용평가업 제외 정보"
+  },
+  {
+    "lawJo": "제6조",
+    "lawContent": "허가의 요건 - 인력/시설/자본금/사업계획",
+    "decreeJo": "시행령 제6조",
+    "decreeContent": "허가의 세부요건 - 상시고용인력, 전산설비 기준"
+  },
+  {
+    "lawJo": "제6조",
+    "lawContent": "자본금 요건 - 신용조사업/채권추심업",
+    "decreeJo": "시행령 제7조",
+    "decreeContent": "자본금 30억원"
+  },
+  {
+    "lawJo": "제8조",
+    "lawContent": "신고 및 보고 사항",
+    "decreeJo": "시행령 제8조",
+    "decreeContent": "신고사항(자본금 감소), 경미한 보고사항(대표자/임원 변경 등)"
+  },
+  {
+    "lawJo": "제9조",
+    "lawContent": "대주주의 변경승인 등",
+    "decreeJo": "시행령 제9조",
+    "decreeContent": "대주주 변경승인 요건 - 조세범처벌법 등 위반 여부"
+  },
+  {
+    "lawJo": "제15조",
+    "lawContent": "수집 및 처리의 원칙 - 목적 명확화, 최소한의 범위",
+    "decreeJo": "시행령 제14조",
+    "decreeContent": "개인신용정보 수집시 동의 예외 사유"
+  },
+  {
+    "lawJo": "제17조",
+    "lawContent": "처리의 위탁 - 수탁자 관리의무",
+    "decreeJo": "시행령 제15조",
+    "decreeContent": "신용정보 처리 위탁시 금융위 보고, 암호화 조치"
+  },
+  {
+    "lawJo": "제18조",
+    "lawContent": "신용정보의 정확성 및 최신성의 유지",
+    "decreeJo": "시행령 제16조",
+    "decreeContent": "등록/변경/관리 기준, 불이익 정보 삭제 기한"
+  },
+  {
+    "lawJo": "제19조",
+    "lawContent": "신용정보전산시스템의 안전보호",
+    "decreeJo": "시행령 제17조",
+    "decreeContent": "기술적/물리적/관리적 보안대책"
+  },
+  {
+    "lawJo": "제20조",
+    "lawContent": "신용정보 관리책임의 명확화 및 업무처리기록의 보존",
+    "decreeJo": "시행령 제18조",
+    "decreeContent": "신용정보관리보호인 지정 기준, 자격요건"
+  },
+  {
+    "lawJo": "제20조의2",
+    "lawContent": "개인신용정보의 보유기간 - 거래종료 후 최장 5년",
+    "decreeJo": "시행령 제18조의2",
+    "decreeContent": "개인신용정보 종류별 관리기간, 삭제 방법/절차"
+  },
+  {
+    "lawJo": "제22조의9",
+    "lawContent": "개인신용정보의 전송요구 (마이데이터)",
+    "decreeJo": "시행령 제18조의6",
+    "decreeContent": "전송요구 대상정보, 전송방식, 수수료 등"
+  },
+  {
+    "lawJo": "제25조",
+    "lawContent": "신용정보집중기관 - 허가/업무 범위",
+    "decreeJo": "시행령 제21조",
+    "decreeContent": "신용정보집중기관 허가요건, 집중관리 대상정보"
+  },
+  {
+    "lawJo": "제26조의4",
+    "lawContent": "데이터전문기관의 지정 - 정보집합물 결합 전담",
+    "decreeJo": "시행령 제23조의4",
+    "decreeContent": "데이터전문기관 지정요건, 결합 절차"
+  },
+  {
+    "lawJo": "제32조",
+    "lawContent": "개인신용정보의 제공/활용에 대한 동의",
+    "decreeJo": "시행령 제28조",
+    "decreeContent": "동의 방식, 동의서 내용, 철회 절차"
+  },
+  {
+    "lawJo": "제33조",
+    "lawContent": "개인신용정보의 이용",
+    "decreeJo": "시행령 제29조",
+    "decreeContent": "개인신용정보 이용 범위, 목적외 이용 금지"
+  },
+  {
+    "lawJo": "제36조",
+    "lawContent": "상거래 거절 근거 신용정보의 고지 등",
+    "decreeJo": "시행령 제31조",
+    "decreeContent": "거절 근거 정보 고지 방법, 기한"
+  },
+  {
+    "lawJo": "제38조",
+    "lawContent": "신용정보주체의 권리 - 열람/정정 청구",
+    "decreeJo": "시행령 제33조",
+    "decreeContent": "열람청구 방법, 정정청구 처리기한"
+  },
+  {
+    "lawJo": "제39조의3",
+    "lawContent": "개인신용정보 관련 소비자 권리",
+    "decreeJo": "시행령 제34조의3",
+    "decreeContent": "프로파일링 대응권, 자동화평가 설명요구권"
+  },
+  {
+    "lawJo": "제40조의2",
+    "lawContent": "가명정보/익명처리 특례",
+    "decreeJo": "시행령 제34조의4",
+    "decreeContent": "가명처리 방법, 추가정보 분리보관 기준"
+  },
+  {
+    "lawJo": "제43조",
+    "lawContent": "과징금 부과",
+    "decreeJo": "시행령 제37조",
+    "decreeContent": "과징금 산정기준, 부과절차"
+  },
+  {
+    "lawJo": "제45조",
+    "lawContent": "감독 및 검사",
+    "decreeJo": "시행령 제39조",
+    "decreeContent": "검사 범위, 검사관의 권한"
+  }
+]

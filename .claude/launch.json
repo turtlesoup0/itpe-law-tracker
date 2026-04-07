@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "/bin/bash",
+      "runtimeArgs": ["-c", "export PATH=/Users/turtlesoup0-macmini/.nvm/versions/node/v20.20.0/bin:$PATH && npm run dev"],
+      "port": 3000
+    }
+  ]
+}

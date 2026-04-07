@@ -1,0 +1,326 @@
+"use client";
+
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Article, ArticleHang } from "@/types/law";
+
+// ---------------------------------------------------------------------------
+// 한글 원문 숫자 매핑
+// ---------------------------------------------------------------------------
+const CIRCLED_NUMBERS = [
+  "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
+  "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
+];
+
+const HO_LABELS = [
+  "가", "나", "다", "라", "마", "바", "사", "아", "자", "차",
+  "카", "타", "파", "하",
+];
+
+function circledNumber(n: number): string {
+  return CIRCLED_NUMBERS[n - 1] ?? `${n}`;
+}
+
+function hoLabel(n: number): string {
+  return HO_LABELS[n - 1] ?? `${n}`;
+}
+
+export function ArticleViewer({
+  articles,
+  lawName,
+}: {
+  articles: Article[];
+  lawName: string;
+}) {
+  const [activeJo, setActiveJo] = useState<string>(articles[0]?.jo || "");
+  const [showCommentary, setShowCommentary] = useState(true);
+  const [tocFilter, setTocFilter] = useState("");
+
+  // refs
+  const contentRef = useRef<HTMLDivElement>(null);
+  const tocRef = useRef<HTMLDivElement>(null);
+  const articleRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const tocItemRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const isClickScrolling = useRef(false);
+
+  // 필터링된 조문 목록
+  const filteredArticles = useMemo(() => {
+    if (!tocFilter.trim()) return articles;
+    const q = tocFilter.trim().toLowerCase();
+    return articles.filter(
+      (a) =>
+        a.jo.toLowerCase().includes(q) ||
+        a.title.toLowerCase().includes(q)
+    );
+  }, [articles, tocFilter]);
+
+  // IntersectionObserver: 현재 보이는 조문 감지
+  useEffect(() => {
+    const container = contentRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isClickScrolling.current) return;
+        // 가장 위에 보이는 조문을 active로 설정
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) {
+          const jo = visible[0].target.getAttribute("data-jo");
+          if (jo) setActiveJo(jo);
+        }
+      },
+      {
+        root: container,
+        rootMargin: "-10% 0px -70% 0px",
+        threshold: 0,
+      }
+    );
+
+    articleRefs.current.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [filteredArticles]);
+
+  // 목차에서 active 항목 자동 스크롤
+  useEffect(() => {
+    const tocItem = tocItemRefs.current.get(activeJo);
+    if (tocItem && tocRef.current) {
+      const tocRect = tocRef.current.getBoundingClientRect();
+      const itemRect = tocItem.getBoundingClientRect();
+      // 목차 뷰포트 밖에 있을 때만 스크롤
+      if (itemRect.top < tocRect.top || itemRect.bottom > tocRect.bottom) {
+        tocItem.scrollIntoView({ block: "center", behavior: "smooth" });
+      }
+    }
+  }, [activeJo]);
+
+  // 목차 클릭 → 본문 스크롤
+  const scrollToArticle = useCallback((jo: string) => {
+    setActiveJo(jo);
+    const el = articleRefs.current.get(jo);
+    if (el && contentRef.current) {
+      isClickScrolling.current = true;
+      el.scrollIntoView({ block: "start", behavior: "smooth" });
+      // 스크롤 완료 후 observer 재활성화
+      setTimeout(() => { isClickScrolling.current = false; }, 600);
+    }
+  }, []);
+
+  return (
+    <div className="relative flex flex-col md:flex-row gap-4" style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}>
+      {/* 좌측 목차 — 독립 스크롤 */}
+      <div className="w-full md:w-64 md:shrink-0 border rounded-lg bg-card flex flex-col overflow-hidden">
+        <div className="p-3 border-b bg-muted shrink-0">
+          <h3 className="font-semibold text-sm text-foreground">
+            {lawName} 조문
+          </h3>
+          <div className="mt-2">
+            <input
+              type="text"
+              value={tocFilter}
+              onChange={(e) => setTocFilter(e.target.value)}
+              placeholder="조문 검색…"
+              className="w-full px-2 py-1 text-xs border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-blue-400"
+            />
+            {tocFilter.trim() && (
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {filteredArticles.length}/{articles.length}건
+              </p>
+            )}
+          </div>
+        </div>
+        <nav ref={tocRef} className="flex-1 overflow-y-auto p-2">
+          {filteredArticles.map((article) => (
+            <button
+              key={article.jo}
+              ref={(el) => { if (el) tocItemRefs.current.set(article.jo, el); }}
+              onClick={() => scrollToArticle(article.jo)}
+              className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
+                activeJo === article.jo
+                  ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold"
+                  : "text-muted-foreground hover:bg-muted font-normal"
+              }`}
+            >
+              {article.jo} {article.title}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* 우측 본문 — 전체 조문 스크롤 */}
+      <div ref={contentRef} className="flex-1 overflow-y-auto space-y-6 pr-1">
+        {filteredArticles.map((article) => (
+          <div
+            key={article.jo}
+            data-jo={article.jo}
+            ref={(el) => { if (el) articleRefs.current.set(article.jo, el); }}
+          >
+            <Card className={activeJo === article.jo ? "ring-2 ring-blue-400/50" : ""}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">
+                  {article.jo} {article.title}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-slate max-w-none">
+                  <p className="whitespace-pre-wrap text-foreground leading-relaxed">
+                    {highlightTerms(article.content)}
+                  </p>
+                  {article.hang && article.hang.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {article.hang.map((h) => (
+                        <HangItem key={h.number} hang={h} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* 조문 해설 토글 */}
+                {showCommentary && article.commentary && (
+                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                      {article.commentary}
+                    </p>
+                    <p className="text-xs text-blue-500 mt-2">* 조문 해설 (참고용)</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        ))}
+
+        {filteredArticles.length === 0 && (
+          <Card>
+            <CardContent className="py-12 text-center text-slate-500">
+              검색 결과가 없습니다.
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* 해설 토글 — 우측 본문 영역 하단 고정 */}
+      <div className="absolute bottom-3 right-4 z-10">
+        <button
+          onClick={() => setShowCommentary(!showCommentary)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full shadow-lg border bg-background text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+          title={showCommentary ? "해설 접기" : "해설 보기"}
+        >
+          <span>{showCommentary ? "💡" : "💬"}</span>
+          <span className="hidden sm:inline">{showCommentary ? "해설 접기" : "해설 보기"}</span>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 항(Hang) 렌더링 컴포넌트
+// ---------------------------------------------------------------------------
+function HangItem({ hang }: { hang: ArticleHang }) {
+  const hasHo = hang.ho && hang.ho.length > 0;
+  const depthLabel = hasHo ? "조 > 항 > 호" : "조 > 항";
+  const num = parseInt(hang.number, 10);
+
+  return (
+    <div className="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+      <div className="text-sm text-muted-foreground">
+        <span className="font-medium text-foreground">
+          {circledNumber(isNaN(num) ? 1 : num)}
+        </span>{" "}
+        {highlightTerms(hang.content)}
+        <span className="ml-2 text-[10px] text-muted-foreground/60 select-none">
+          [{depthLabel}]
+        </span>
+      </div>
+      {hasHo && (
+        <ol className="mt-1 ml-4 space-y-1 list-none pl-0">
+          {hang.ho!.map((ho) => {
+            const hoNum = parseInt(ho.number, 10);
+            return (
+              <li
+                key={ho.number}
+                className="text-sm text-muted-foreground pl-3 border-l border-slate-300 dark:border-slate-600"
+              >
+                <span className="font-medium text-foreground">
+                  {hoLabel(isNaN(hoNum) ? 1 : hoNum)}.
+                </span>{" "}
+                {highlightTerms(ho.content)}
+              </li>
+            );
+          })}
+        </ol>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 법률 용어 하이라이팅 (호버+포커스 툴팁 + 인라인 해설)
+// ---------------------------------------------------------------------------
+function highlightTerms(text: string): React.ReactNode {
+  const terms: Record<string, string> = {
+    "정보통신망": "인터넷/네트워크",
+    "정보통신서비스": "인터넷 서비스",
+    "개인정보처리자": "개인정보를 다루는 회사/기관",
+    "정보주체": "개인정보의 주인(본인)",
+    "대통령령": "시행령(세부 규정)",
+    "클라우드컴퓨팅": "클라우드 서비스",
+    "행정규칙": "고시/훈령/예규 등 세부규정",
+    "정보보호": "해킹·유출 방지 체계",
+    "과징금": "위반 시 부과되는 금전적 제재",
+    "시행령": "법률의 세부 실행 규정",
+    "시행규칙": "시행령의 하위 규정",
+  };
+
+  const sortedTermKeys = Object.keys(terms).sort((a, b) => b.length - a.length);
+
+  const parts: React.ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    let earliest = -1;
+    let earliestTerm = "";
+
+    for (const term of sortedTermKeys) {
+      const idx = remaining.indexOf(term);
+      if (idx !== -1 && (earliest === -1 || idx < earliest)) {
+        earliest = idx;
+        earliestTerm = term;
+      }
+    }
+
+    if (earliest === -1) {
+      parts.push(remaining);
+      break;
+    }
+
+    if (earliest > 0) {
+      parts.push(remaining.substring(0, earliest));
+    }
+
+    const shortExplanation = terms[earliestTerm];
+    parts.push(
+      <span key={key++} className="relative group inline-block">
+        <span
+          className="underline decoration-dotted decoration-blue-400 cursor-help"
+          tabIndex={0}
+        >
+          {earliestTerm}
+          <span className="text-[10px] text-blue-500 dark:text-blue-400 no-underline ml-0.5">
+            ({shortExplanation})
+          </span>
+        </span>
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-3 py-1.5 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+          <span className="font-semibold">{earliestTerm}</span>
+          <span className="mx-1">—</span>
+          {shortExplanation}
+        </span>
+      </span>
+    );
+
+    remaining = remaining.substring(earliest + earliestTerm.length);
+  }
+
+  return <>{parts}</>;
+}

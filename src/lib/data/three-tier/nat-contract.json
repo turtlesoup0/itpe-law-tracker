@@ -1,0 +1,118 @@
+[
+  {
+    "lawJo": "제4조",
+    "lawContent": "국제입찰에 따른 정부조달계약의 범위",
+    "decreeJo": "특례규정 제3조",
+    "decreeContent": "적용범위 - 특정조달계약의 범위와 제외 대상 규정"
+  },
+  {
+    "lawJo": "제5조의2",
+    "lawContent": "청렴계약 - 구체적 내용과 체결 절차는 대통령령으로 정함",
+    "decreeJo": "시행령 제4조의2",
+    "decreeContent": "청렴계약의 내용과 체결 절차 - 금품수수 금지, 담합 금지, 특정정보 제공 요구 금지 등"
+  },
+  {
+    "lawJo": "제5조의3",
+    "lawContent": "청렴계약 위반에 따른 계약의 해제/해지 등",
+    "decreeJo": "시행령 제4조의3",
+    "decreeContent": "청렴계약을 위반한 계약의 계속 이행 승인 기준"
+  },
+  {
+    "lawJo": "제6조",
+    "lawContent": "계약사무의 위임/위탁",
+    "decreeJo": "시행령 제5조",
+    "decreeContent": "계약관의 대리와 분임 및 임명통지"
+  },
+  {
+    "lawJo": "제6조",
+    "lawContent": "계약관의 재정보증",
+    "decreeJo": "시행령 제6조",
+    "decreeContent": "계약담당공무원의 재정보증"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "계약의 방법 - 일반경쟁, 제한경쟁, 지명경쟁, 수의계약",
+    "decreeJo": "시행령 제13조",
+    "decreeContent": "입찰참가자격 사전심사 - 계약수행능력 평가기준",
+    "ruleJo": "시행규칙 제23조",
+    "ruleContent": "계약이행의 성실도 평가 시 고려요소"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "계약의 방법 - 입찰참가자격 사전심사 절차",
+    "decreeJo": "시행령 제13조",
+    "decreeContent": "입찰참가자격 사전심사",
+    "ruleJo": "시행규칙 제23조의2",
+    "ruleContent": "입찰참가자격 사전심사 절차 - 신청기간, 보완요구, 재심사"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "제한경쟁입찰",
+    "decreeJo": "특례규정 제21조",
+    "decreeContent": "제한경쟁입찰에 의할 계약과 제한사항",
+    "ruleJo": "시행규칙 제24조",
+    "ruleContent": "제한경쟁입찰의 대상 - 추정가격 기준"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "제한경쟁입찰 제한기준",
+    "decreeJo": "특례규정 제21조",
+    "decreeContent": "제한경쟁입찰 자격 제한",
+    "ruleJo": "시행규칙 제25조",
+    "ruleContent": "제한경쟁입찰의 제한기준 - 실적, 시공능력 기준"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "지명경쟁입찰",
+    "decreeJo": "특례규정 제18조",
+    "decreeContent": "지명경쟁입찰 - 자격 및 지명기준"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "지명경쟁입찰 참가자 지명 및 통지",
+    "decreeJo": "특례규정 제19조",
+    "decreeContent": "지명경쟁입찰 참가자의 지명 및 통지"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "지명경쟁입찰의 공고",
+    "decreeJo": "특례규정 제20조",
+    "decreeContent": "지명경쟁입찰의 공고 절차"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "지명경쟁입찰 대상",
+    "decreeJo": "시행령 제23조",
+    "decreeContent": "지명경쟁입찰에 의할 계약 - 특수설비/기술 필요, 금액기준별 공사/물품/용역",
+    "ruleJo": "특례규칙 제6조",
+    "ruleContent": "수의계약 관련 디자인 공모 기준"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "지명경쟁입찰 대상자의 지명",
+    "decreeJo": "시행령 제24조",
+    "decreeContent": "5인 이상 입찰대상자 지명, 2인 이상 참가신청 필요",
+    "ruleJo": "시행규칙 제30조",
+    "ruleContent": "지명경쟁입찰 참가자격통지 준용"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "수의계약",
+    "decreeJo": "시행령 제26조",
+    "decreeContent": "수의계약에 의할 수 있는 경우 - 긴급, 안보, 소액 등"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "재공고입찰과 수의계약",
+    "decreeJo": "시행령 제27조",
+    "decreeContent": "경쟁입찰 후 입찰자 1인/낙찰자 없는 경우 수의계약"
+  },
+  {
+    "lawJo": "제7조",
+    "lawContent": "견적에 의한 가격결정",
+    "decreeJo": "시행령 제30조",
+    "decreeContent": "수의계약 시 2인 이상 견적서 징수 등",
+    "ruleJo": "시행규칙 제33조",
+    "ruleContent": "전자조달시스템 견적서 제출 곤란한 경우"
+  }
+]

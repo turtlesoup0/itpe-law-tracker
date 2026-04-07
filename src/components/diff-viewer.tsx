@@ -1,45 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import type { CompareOldNewItem } from "@/types/law";
-import { useLLMSettings } from "@/lib/llm-settings";
-
-function getChangeColor(type: string): { bg: string; border: string; badge: string } {
-  switch (type) {
-    case "신설": return { bg: "bg-green-50 dark:bg-green-950", border: "border-green-200 dark:border-green-800", badge: "bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300" };
-    case "삭제": return { bg: "bg-red-50 dark:bg-red-950", border: "border-red-200 dark:border-red-800", badge: "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300" };
-    case "변경": return { bg: "bg-amber-50 dark:bg-amber-950", border: "border-amber-200 dark:border-amber-800", badge: "bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300" };
-    default: return { bg: "bg-slate-50 dark:bg-slate-900", border: "border-slate-200 dark:border-slate-700", badge: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" };
-  }
-}
-
-function highlightDiff(oldText: string, newText: string): { oldHtml: string; newHtml: string } {
-  if (!oldText) return { oldHtml: "", newHtml: `<span class="bg-green-200 dark:bg-green-800/60 underline">${newText}</span>` };
-  if (!newText) return { oldHtml: `<span class="bg-red-200 dark:bg-red-800/60 line-through">${oldText}</span>`, newHtml: "" };
-
-  const oldWords = oldText.split(/(\s+)/);
-  const newWords = newText.split(/(\s+)/);
-
-  let oldHtml = "";
-  let newHtml = "";
-
-  const maxLen = Math.max(oldWords.length, newWords.length);
-  for (let i = 0; i < maxLen; i++) {
-    const ow = oldWords[i] || "";
-    const nw = newWords[i] || "";
-
-    if (ow === nw) {
-      oldHtml += ow;
-      newHtml += nw;
-    } else {
-      if (ow) oldHtml += `<span class="bg-red-200 dark:bg-red-800/60 line-through rounded px-0.5">${ow}</span>`;
-      if (nw) newHtml += `<span class="bg-green-200 dark:bg-green-800/60 underline rounded px-0.5">${nw}</span>`;
-    }
-  }
-
-  return { oldHtml, newHtml };
-}
+import { getChangeTypeColor } from "@/lib/colors";
+import { highlightDiff } from "@/lib/diff-utils";
+import { AISummarySection } from "@/components/diff-summary";
 
 interface DiffViewerProps {
   changes: CompareOldNewItem[];
@@ -47,78 +13,6 @@ interface DiffViewerProps {
   amendmentDate?: string;
   enforcementDate?: string;
   amendmentReason?: string;
-}
-
-function AISummarySection({ item }: { item: CompareOldNewItem }) {
-  // 캐싱된 요약이 있으면 즉시 표시 (LLM 호출 없음)
-  if (item.summary) {
-    return (
-      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
-        <span className="font-semibold">📋 요약:</span> {item.summary}
-      </div>
-    );
-  }
-
-  // 캐싱된 요약 없음 → 실시간 LLM 요약 버튼 (fallback)
-  return <LiveSummaryButton item={item} />;
-}
-
-function LiveSummaryButton({ item }: { item: CompareOldNewItem }) {
-  const [llmSettings] = useLLMSettings();
-  const [summary, setSummary] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSummarize = useCallback(async () => {
-    if (!llmSettings?.apiKey) {
-      setError("설정 > API 키를 먼저 등록하세요");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/llm/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          oldText: item.oldText,
-          newText: item.newText,
-          articleNo: item.articleNo,
-          provider: llmSettings.provider,
-          apiKey: llmSettings.apiKey,
-          model: llmSettings.model,
-        }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setSummary(data.summary);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "요약 실패");
-    } finally {
-      setLoading(false);
-    }
-  }, [item, llmSettings]);
-
-  if (summary) {
-    return (
-      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
-        <span className="font-semibold">AI 요약:</span> {summary}
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-1.5 flex items-center gap-2">
-      <button
-        onClick={handleSummarize}
-        disabled={loading}
-        className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 underline underline-offset-2 disabled:opacity-50"
-      >
-        {loading ? "요약 중..." : "✨ AI 요약"}
-      </button>
-      {error && <span className="text-xs text-red-500">{error}</span>}
-    </div>
-  );
 }
 
 export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, amendmentReason }: DiffViewerProps) {
@@ -182,7 +76,7 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
             <div className="px-4 py-2 font-medium text-sm text-green-700 dark:text-green-400">개정 후</div>
           </div>
           {changes.map((item, i) => {
-            const colors = getChangeColor(item.changeType);
+            const colors = getChangeTypeColor(item.changeType);
             const diff = highlightDiff(item.oldText, item.newText);
             return (
               <div key={i} className={`border-b last:border-b-0 ${colors.bg}`}>
@@ -209,7 +103,7 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
       ) : (
         <div className="border rounded-lg overflow-hidden">
           {changes.map((item, i) => {
-            const colors = getChangeColor(item.changeType);
+            const colors = getChangeTypeColor(item.changeType);
             const diff = highlightDiff(item.oldText, item.newText);
             return (
               <div key={i} className={`border-b last:border-b-0 p-4 ${colors.bg}`}>

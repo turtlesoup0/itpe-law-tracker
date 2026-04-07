@@ -2,27 +2,7 @@
 
 import Link from "next/link";
 import type { Amendment } from "@/types/law";
-
-function getStatusColor(enforcementDate: string): { bg: string; text: string; label: string } {
-  const today = new Date();
-  const enfDate = new Date(enforcementDate);
-  const daysUntil = Math.ceil((enfDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-  if (daysUntil < 0) return { bg: "bg-green-100 dark:bg-green-900", text: "text-green-700 dark:text-green-300", label: "시행 중" };
-  if (daysUntil <= 30) return { bg: "bg-red-100 dark:bg-red-900", text: "text-red-700 dark:text-red-300", label: `D-${daysUntil}` };
-  if (daysUntil <= 90) return { bg: "bg-amber-100 dark:bg-amber-900", text: "text-amber-700 dark:text-amber-300", label: `D-${daysUntil}` };
-  return { bg: "bg-blue-100 dark:bg-blue-900", text: "text-blue-700 dark:text-blue-300", label: `D-${daysUntil}` };
-}
-
-function getTypeColor(type: string): string {
-  switch (type) {
-    case "전부개정": return "bg-red-500";
-    case "일부개정": return "bg-blue-500";
-    case "제정": return "bg-green-500";
-    case "폐지": return "bg-slate-500";
-    default: return "bg-slate-400";
-  }
-}
+import { getEnforcementStatusColor, getAmendmentTypeColor } from "@/lib/colors";
 
 function getImportance(amd: Amendment): { level: "high" | "medium" | "low"; label: string } {
   // 전부개정 is always high importance
@@ -38,13 +18,13 @@ function getImportance(amd: Amendment): { level: "high" | "medium" | "low"; labe
 }
 
 function renderAmendmentItem(amd: Amendment, lawId: string) {
-  const status = getStatusColor(amd.enforcementDate);
+  const status = getEnforcementStatusColor(amd.enforcementDate);
   const importance = getImportance(amd);
 
   return (
     <div key={amd.id} className="relative pl-12">
       {/* 타임라인 점 */}
-      <div className={`absolute left-2.5 w-3 h-3 rounded-full ${getTypeColor(amd.type)} ring-4 ring-background`} />
+      <div className={`absolute left-2.5 w-3 h-3 rounded-full ${getAmendmentTypeColor(amd.type)} ring-4 ring-background`} />
 
       <div className="bg-card border rounded-lg p-4 hover:shadow-md transition-shadow">
         <div className="flex items-center gap-2 mb-2 flex-wrap">

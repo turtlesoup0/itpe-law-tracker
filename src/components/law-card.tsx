@@ -3,12 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { CategoryBadge } from "@/components/category-badge";
 import type { LawInfo } from "@/lib/laws-data";
 
-const borderColors: Record<string, string> = {
-  blue: "border-l-blue-500",
-  emerald: "border-l-emerald-500",
-  amber: "border-l-amber-500",
-  purple: "border-l-purple-500",
-};
+import { LAW_BORDER_COLORS } from "@/lib/colors";
 
 const relevanceMap: Record<string, string[]> = {
   "info-comm": ["웹서비스 운영", "개인정보 처리", "스팸 방지"],
@@ -28,7 +23,7 @@ export function LawCard({ law }: { law: LawInfo }) {
 
   return (
     <Link href={`/laws/${law.id}`}>
-      <Card className={`border-l-4 ${borderColors[law.color] || ""} hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 cursor-pointer h-full`}>
+      <Card className={`border-l-4 ${LAW_BORDER_COLORS[law.color] || ""} hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 cursor-pointer h-full`}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between mb-1">
             <CategoryBadge category={law.category} />

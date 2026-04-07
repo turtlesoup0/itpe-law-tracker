@@ -5,19 +5,12 @@ import { Input } from "@/components/ui/input";
 import { IT_LAWS, type LawCategory, CATEGORIES } from "@/lib/laws-data";
 import { LawCard } from "@/components/law-card";
 import { useCustomLaws, AddLawDialog } from "@/components/add-law-dialog";
+import { CATEGORY_SECTION_COLORS } from "@/lib/colors";
 
 const filterTabs: { label: string; value: LawCategory | "전체" }[] = [
   { label: "전체", value: "전체" },
   ...CATEGORIES.map((c) => ({ label: c.label, value: c.value })),
 ];
-
-const categoryColors: Record<string, string> = {
-  "정보보호": "border-blue-500 text-blue-700 dark:text-blue-300",
-  "산업진흥": "border-emerald-500 text-emerald-700 dark:text-emerald-300",
-  "전자정부": "border-amber-500 text-amber-700 dark:text-amber-300",
-  "계약": "border-purple-500 text-purple-700 dark:text-purple-300",
-  "데이터": "border-cyan-500 text-cyan-700 dark:text-cyan-300",
-};
 
 export default function LawsPage() {
   const [search, setSearch] = useState("");
@@ -92,7 +85,7 @@ export default function LawsPage() {
         <div className="space-y-8">
           {grouped.map(({ category, laws }) => (
             <section key={category}>
-              <h2 className={`text-sm font-semibold uppercase tracking-wider mb-3 pl-1 border-l-4 pl-3 ${categoryColors[category] ?? "border-slate-400 text-slate-600 dark:text-slate-400"}`}>
+              <h2 className={`text-sm font-semibold uppercase tracking-wider mb-3 pl-1 border-l-4 pl-3 ${CATEGORY_SECTION_COLORS[category] ?? "border-slate-400 text-slate-600 dark:text-slate-400"}`}>
                 {category}
                 <span className="ml-2 text-xs font-normal text-muted-foreground">{laws.length}건</span>
               </h2>

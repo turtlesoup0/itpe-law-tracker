@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import type { CompareOldNewItem } from "@/types/law";
+import { useLLMSettings } from "@/lib/llm-settings";
 
 function getChangeColor(type: string): { bg: string; border: string; badge: string } {
   switch (type) {
@@ -46,6 +47,64 @@ interface DiffViewerProps {
   amendmentDate?: string;
   enforcementDate?: string;
   amendmentReason?: string;
+}
+
+function AISummaryButton({ item }: { item: CompareOldNewItem }) {
+  const [llmSettings] = useLLMSettings();
+  const [summary, setSummary] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSummarize = useCallback(async () => {
+    if (!llmSettings?.apiKey) {
+      setError("설정 > API 키를 먼저 등록하세요");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/llm/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          oldText: item.oldText,
+          newText: item.newText,
+          articleNo: item.articleNo,
+          provider: llmSettings.provider,
+          apiKey: llmSettings.apiKey,
+          model: llmSettings.model,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setSummary(data.summary);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "요약 실패");
+    } finally {
+      setLoading(false);
+    }
+  }, [item, llmSettings]);
+
+  if (summary) {
+    return (
+      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
+        <span className="font-semibold">AI 요약:</span> {summary}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-1.5 flex items-center gap-2">
+      <button
+        onClick={handleSummarize}
+        disabled={loading}
+        className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 underline underline-offset-2 disabled:opacity-50"
+      >
+        {loading ? "요약 중..." : "✨ AI 요약"}
+      </button>
+      {error && <span className="text-xs text-red-500">{error}</span>}
+    </div>
+  );
 }
 
 export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, amendmentReason }: DiffViewerProps) {
@@ -126,6 +185,9 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
                   <div className="px-4 py-3 text-sm text-foreground border-r" dangerouslySetInnerHTML={{ __html: diff.oldHtml || '<span class="text-muted-foreground italic">없음</span>' }} />
                   <div className="px-4 py-3 text-sm text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml || '<span class="text-muted-foreground italic">없음</span>' }} />
                 </div>
+                <div className="px-4 pb-3">
+                  <AISummaryButton item={item} />
+                </div>
               </div>
             );
           })}
@@ -156,6 +218,7 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
                     <span className="bg-green-100 dark:bg-green-900/30 text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml }} />
                   </div>
                 )}
+                <AISummaryButton item={item} />
               </div>
             );
           })}

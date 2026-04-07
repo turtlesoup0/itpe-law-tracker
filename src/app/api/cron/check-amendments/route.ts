@@ -1,93 +1,8 @@
 import { NextResponse } from "next/server";
 import { IT_LAWS } from "@/lib/utils/law-constants";
+import { getLawHistory, compareOldNew } from "@/lib/mcp/mcp-client";
 import * as fs from "fs";
 import * as path from "path";
-
-// ---------------------------------------------------------------------------
-// MCP Helper — get_law_history 호출
-// ---------------------------------------------------------------------------
-
-const MCP_BASE = "https://korean-law-mcp.fly.dev";
-const MCP_API_KEY = process.env.MCP_API_KEY || "itpe_law_follower";
-
-interface McpHistoryItem {
-  lawMst: string;
-  amendmentDate: string;
-  enforcementDate: string;
-  amendmentType: string;
-  lawNo: string;
-  amendmentReason?: string;
-}
-
-async function mcpGetLawHistory(mst: string): Promise<McpHistoryItem[]> {
-  try {
-    const res = await fetch(`${MCP_BASE}/mcp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": MCP_API_KEY,
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "tools/call",
-        params: {
-          name: "get_law_history",
-          arguments: { mst },
-        },
-      }),
-    });
-
-    if (!res.ok) return [];
-
-    const json = await res.json();
-    const content = json?.result?.content;
-    if (!content?.[0]?.text) return [];
-
-    const parsed = JSON.parse(content[0].text);
-    return Array.isArray(parsed) ? parsed : parsed?.items || parsed?.history || [];
-  } catch {
-    return [];
-  }
-}
-
-async function mcpCompareOldNew(mst: string): Promise<{
-  amendmentDate: string;
-  enforcementDate: string;
-  amendmentType: string;
-  amendmentReason: string;
-  lawNo: string;
-  items: { articleNo: string; oldText: string; newText: string; changeType: string }[];
-} | null> {
-  try {
-    const res = await fetch(`${MCP_BASE}/mcp`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": MCP_API_KEY,
-      },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        id: 1,
-        method: "tools/call",
-        params: {
-          name: "compare_old_new",
-          arguments: { mst },
-        },
-      }),
-    });
-
-    if (!res.ok) return null;
-
-    const json = await res.json();
-    const content = json?.result?.content;
-    if (!content?.[0]?.text) return null;
-
-    return JSON.parse(content[0].text);
-  } catch {
-    return null;
-  }
-}
 
 // ---------------------------------------------------------------------------
 // Compare JSON 파일 관리
@@ -151,7 +66,7 @@ export async function GET(request: Request) {
       const savedLatest = getLatestAmendmentDate(currentData);
 
       // 2. MCP에서 최신 개정이력 조회
-      const history = await mcpGetLawHistory(law.mst);
+      const history = await getLawHistory(law.mst);
 
       if (history.length === 0) {
         results.push({
@@ -197,7 +112,7 @@ export async function GET(request: Request) {
         });
       } else {
         // 4. 새 개정 감지! → compare_old_new로 상세 데이터 수집
-        const compareData = await mcpCompareOldNew(law.mst);
+        const compareData = await compareOldNew(law.mst);
 
         if (compareData && compareData.items?.length > 0) {
           // 새 entry ID 생성

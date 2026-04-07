@@ -97,6 +97,7 @@ export interface CompareOldNewItem {
   amendmentDate?: string;  // 개정일
   enforcementDate?: string; // 시행일
   amendmentReason?: string; // 제·개정이유
+  summary?: string;         // 캐싱된 AI 요약 (Opus 1회 생성)
 }
 
 export interface CompareApiResponse {

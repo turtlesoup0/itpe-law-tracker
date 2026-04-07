@@ -49,7 +49,21 @@ interface DiffViewerProps {
   amendmentReason?: string;
 }
 
-function AISummaryButton({ item }: { item: CompareOldNewItem }) {
+function AISummarySection({ item }: { item: CompareOldNewItem }) {
+  // 캐싱된 요약이 있으면 즉시 표시 (LLM 호출 없음)
+  if (item.summary) {
+    return (
+      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
+        <span className="font-semibold">📋 요약:</span> {item.summary}
+      </div>
+    );
+  }
+
+  // 캐싱된 요약 없음 → 실시간 LLM 요약 버튼 (fallback)
+  return <LiveSummaryButton item={item} />;
+}
+
+function LiveSummaryButton({ item }: { item: CompareOldNewItem }) {
   const [llmSettings] = useLLMSettings();
   const [summary, setSummary] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -186,7 +200,7 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
                   <div className="px-4 py-3 text-sm text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml || '<span class="text-muted-foreground italic">없음</span>' }} />
                 </div>
                 <div className="px-4 pb-3">
-                  <AISummaryButton item={item} />
+                  <AISummarySection item={item} />
                 </div>
               </div>
             );
@@ -218,7 +232,7 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
                     <span className="bg-green-100 dark:bg-green-900/30 text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml }} />
                   </div>
                 )}
-                <AISummaryButton item={item} />
+                <AISummarySection item={item} />
               </div>
             );
           })}

@@ -399,6 +399,10 @@ const creditInfoCompare: Record<string, CompareEntry> = require("@/lib/data/comp
 const publicDataCompare: Record<string, CompareEntry> = require("@/lib/data/compare/public-data.json") as Record<string, CompareEntry>;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const dataIndustryCompare: Record<string, CompareEntry> = require("@/lib/data/compare/data-industry.json") as Record<string, CompareEntry>;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const intelligentInfoCompare: Record<string, CompareEntry> = require("@/lib/data/compare/intelligent-info.json") as Record<string, CompareEntry>;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const quantumCompare: Record<string, CompareEntry> = require("@/lib/data/compare/quantum.json") as Record<string, CompareEntry>;
 
 const compareMap: Record<string, Record<string, CompareEntry>> = {
   "info-comm": infoCommCompare,
@@ -411,6 +415,8 @@ const compareMap: Record<string, Record<string, CompareEntry>> = {
   "credit-info": creditInfoCompare,
   "public-data": publicDataCompare,
   "data-industry": dataIndustryCompare,
+  "intelligent-info": intelligentInfoCompare,
+  quantum: quantumCompare,
 };
 
 export function getMockCompareData(lawId: string, amdId?: string): CompareEntry | null {

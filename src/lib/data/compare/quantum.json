@@ -1,0 +1,22 @@
+{
+  "amd-quantum-001": {
+    "amendmentDate": "2024-01-09",
+    "enforcementDate": "2024-11-01",
+    "amendmentReason": "벤처기업육성에 관한 특별조치법이 벤처기업육성에 관한 특별법으로 법명 변경됨에 따른 인용 법률명 정비",
+    "items": [
+      {
+        "articleNo": "제16조",
+        "articleTitle": "창업 및 기업육성",
+        "oldText": "벤처(「벤처기업육성에 관한 특별조치법」 제2조제1항에 따른 벤처기업 및 ...)",
+        "newText": "벤처(「벤처기업육성에 관한 특별법」 제2조제1항에 따른 벤처기업 및 ...)",
+        "changeType": "타법개정"
+      }
+    ],
+    "changeMeta": {
+      "제16조": {
+        "tags": ["법명변경", "타법개정"],
+        "affectedParties": ["양자산업 관련 중소기업 및 벤처"]
+      }
+    }
+  }
+}

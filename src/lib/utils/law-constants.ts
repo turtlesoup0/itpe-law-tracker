@@ -101,6 +101,26 @@ export const IT_LAWS: Law[] = [
     description: "데이터의 생산·거래·활용 촉진 및 데이터산업 발전에 관한 기본 사항",
     color: "cyan",
   },
+  {
+    id: "intelligent-info",
+    lawId: "000028",
+    mst: "268535",
+    name: "지능정보화 기본법",
+    shortName: "지능정보화기본법",
+    category: "전자정부",
+    description: "지능정보화 관련 정책 수립ㆍ추진, 지능정보사회 구현 및 국가경쟁력 확보",
+    color: "amber",
+  },
+  {
+    id: "quantum",
+    lawId: "014525",
+    mst: "258511",
+    name: "양자과학기술 및 양자산업 육성에 관한 법률",
+    shortName: "양자법",
+    category: "산업진흥",
+    description: "양자과학기술 연구기반 조성 및 양자산업의 체계적 육성",
+    color: "emerald",
+  },
 ];
 
 export function getLawById(id: string): Law | undefined {

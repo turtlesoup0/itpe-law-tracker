@@ -238,6 +238,62 @@ const baseLawHierarchy: Record<string, HierarchyNode[]> = {
       ],
     },
   ],
+  "intelligent-info": [
+    {
+      id: "intelligent-info-law",
+      name: "지능정보화기본법",
+      fullName: "지능정보화 기본법",
+      type: "법률",
+      color: "blue",
+      children: [
+        {
+          id: "intelligent-info-decree",
+          name: "지능정보화기본법 시행령",
+          fullName: "지능정보화 기본법 시행령",
+          type: "시행령",
+          color: "emerald",
+          children: [
+            {
+              id: "intelligent-info-rule",
+              name: "지능정보화기본법 시행규칙",
+              fullName: "지능정보화 기본법 시행규칙",
+              type: "시행규칙",
+              color: "amber",
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+  quantum: [
+    {
+      id: "quantum-law",
+      name: "양자법",
+      fullName: "양자과학기술 및 양자산업 육성에 관한 법률",
+      type: "법률",
+      color: "blue",
+      children: [
+        {
+          id: "quantum-decree",
+          name: "양자법 시행령",
+          fullName: "양자과학기술 및 양자산업 육성에 관한 법률 시행령",
+          type: "시행령",
+          color: "emerald",
+          children: [
+            {
+              id: "quantum-rule",
+              name: "양자법 시행규칙",
+              fullName: "양자과학기술 및 양자산업 육성에 관한 법률 시행규칙",
+              type: "시행규칙",
+              color: "amber",
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -275,6 +331,7 @@ const relatedLawsMap: Record<string, { lawId: string; relation: string }[]> = {
     { lawId: "cloud", relation: "전자정부 클라우드 전환" },
     { lawId: "public-data", relation: "행정정보 공공데이터" },
     { lawId: "info-comm", relation: "전자정부 정보보호" },
+    { lawId: "intelligent-info", relation: "지능정보화기본법 특례 (제5조③)" },
   ],
   "nat-contract": [
     { lawId: "sw-promotion", relation: "SW사업 대가 기준" },
@@ -293,6 +350,16 @@ const relatedLawsMap: Record<string, { lawId: string; relation: string }[]> = {
     { lawId: "public-data", relation: "공공데이터 활용" },
     { lawId: "privacy", relation: "데이터 결합 시 보호" },
     { lawId: "credit-info", relation: "금융데이터 활용" },
+  ],
+  "intelligent-info": [
+    { lawId: "e-gov", relation: "전자정부 특례 (제5조③)" },
+    { lawId: "cloud", relation: "클라우드컴퓨팅기술 정의 참조 (제2조)" },
+    { lawId: "public-data", relation: "공공데이터 시책 연계 (제42조)" },
+    { lawId: "info-comm", relation: "정보통신망 정의 참조 (제2조)" },
+  ],
+  quantum: [
+    { lawId: "sw-promotion", relation: "소프트웨어 정의 참조 (제2조)" },
+    { lawId: "intelligent-info", relation: "지능정보기술 연계" },
   ],
 };
 
@@ -757,6 +824,143 @@ const agencyHierarchyData: Record<string, HierarchyNode[]> = {
       type: "기관",
       color: "rose",
       relation: "공공데이터 관련 (제5조, 제10조, 제20조)",
+      children: [],
+    },
+  ],
+  // ── 지능정보화기본법: 조문 분석 기반 ──
+  "intelligent-info": [
+    {
+      id: "intelligent-info-agency-msit",
+      name: "과기정통부장관",
+      fullName: "과학기술정보통신부장관 (다수 조문)",
+      type: "기관",
+      color: "rose",
+      relation: "종합계획 수립, 기술기준 고시, 전담기관 지정 등",
+      children: [
+        {
+          id: "intelligent-info-agency-nia",
+          name: "지능정보사회원(NIA)",
+          fullName: "한국지능정보사회진흥원 (제12조)",
+          type: "기관",
+          color: "rose",
+          relation: "지능정보사회 시책·사업 지원 (제12조)",
+          children: [],
+        },
+        {
+          id: "intelligent-info-agency-ict-cio",
+          name: "지능정보화책임관",
+          fullName: "지능정보화책임관 협의회 (제8조, 제9조)",
+          type: "기관",
+          color: "rose",
+          relation: "시책 수립·시행 총괄 (제8조)",
+          children: [],
+        },
+        {
+          id: "intelligent-info-agency-overuse",
+          name: "과의존 대응센터",
+          fullName: "지능정보서비스 과의존 대응센터 (제52조)",
+          type: "기관",
+          color: "rose",
+          relation: "과의존 상담·치유 (제52조)",
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "intelligent-info-agency-mois",
+      name: "행안부장관",
+      fullName: "행정안전부장관 (제7조, 제40조, 제68조, 제69조)",
+      type: "기관",
+      color: "rose",
+      relation: "실행계획 점검, 공공 데이터센터 (제7조, 제40조③)",
+      children: [
+        {
+          id: "intelligent-info-agency-klid",
+          name: "한국지역정보개발원",
+          fullName: "한국지역정보개발원 (제69조③)",
+          type: "기관",
+          color: "rose",
+          relation: "지역지능정보화 위탁 (제69조③)",
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "intelligent-info-agency-nec",
+      name: "국가교육위원회",
+      fullName: "국가교육위원회 (제44조③)",
+      type: "기관",
+      color: "rose",
+      relation: "정보문화 교육과정 협의 (제44조③)",
+      children: [],
+    },
+  ],
+  // ── 양자법: 조문 분석 기반 ──
+  quantum: [
+    {
+      id: "quantum-agency-pm",
+      name: "국무총리",
+      fullName: "국무총리 (제7조)",
+      type: "기관",
+      color: "rose",
+      relation: "양자전략위원회 위원장 (제7조②)",
+      children: [
+        {
+          id: "quantum-agency-committee",
+          name: "양자전략위원회",
+          fullName: "양자전략위원회 (제7조)",
+          type: "기관",
+          color: "rose",
+          relation: "종합계획·클러스터 심의 (제7조①)",
+          children: [
+            {
+              id: "quantum-agency-working",
+              name: "실무위원회",
+              fullName: "실무위원회 (제7조④)",
+              type: "기관",
+              color: "rose",
+              relation: "사전검토 및 위임 안건 심의",
+              children: [],
+            },
+            {
+              id: "quantum-agency-expert",
+              name: "전문위원회",
+              fullName: "전문위원회 (제7조⑤)",
+              type: "기관",
+              color: "rose",
+              relation: "전문가 자문 지원",
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "quantum-agency-msit",
+      name: "과기정통부장관",
+      fullName: "과학기술정보통신부장관 (다수 조문)",
+      type: "기관",
+      color: "rose",
+      relation: "양자종합계획 수립, 양자팹·클러스터 지원 등",
+      children: [
+        {
+          id: "quantum-agency-research-center",
+          name: "양자연구센터",
+          fullName: "양자과학기술 연구센터 (제18조)",
+          type: "기관",
+          color: "rose",
+          relation: "원천기술 확보·산업 연계 (제18조)",
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "quantum-agency-nis",
+      name: "국가정보원장",
+      fullName: "국가정보원장 (제10조③)",
+      type: "기관",
+      color: "rose",
+      relation: "보안위협 기밀 유지 판단 (제10조③ 단서)",
       children: [],
     },
   ],

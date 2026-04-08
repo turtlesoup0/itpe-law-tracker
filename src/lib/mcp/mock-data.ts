@@ -23,6 +23,10 @@ const creditInfoArticles: Article[] = require("@/lib/data/articles/credit-info.j
 const publicDataArticles: Article[] = require("@/lib/data/articles/public-data.json") as Article[];
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const dataIndustryArticles: Article[] = require("@/lib/data/articles/data-industry.json") as Article[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const intelligentInfoArticles: Article[] = require("@/lib/data/articles/intelligent-info.json") as Article[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const quantumArticles: Article[] = require("@/lib/data/articles/quantum.json") as Article[];
 
 // ---------------------------------------------------------------------------
 // 제·개정이유 데이터 — 법제처 API 실데이터
@@ -252,6 +256,30 @@ const dataIndustryAmendments: Amendment[] = [
   },
 ];
 
+// 지능정보화기본법
+const intelligentInfoAmendments: Amendment[] = [
+  {
+    id: "amd-intinfo-001",
+    lawId: "intelligent-info",
+    date: "2025-01-21",
+    type: "타법개정",
+    summary: "인공지능 기본법 제정에 따른 지능정보화 기본법 연계 조항 정비",
+    enforcementDate: "2026-01-22",
+  },
+];
+
+// 양자법
+const quantumAmendments: Amendment[] = [
+  {
+    id: "amd-quantum-001",
+    lawId: "quantum",
+    date: "2024-01-09",
+    type: "제정",
+    summary: "양자과학기술 및 양자산업 육성에 관한 법률 제정 — 양자전략위원회 설치, 종합계획 수립, 양자연구센터·클러스터 지원, 양자인력 양성 등 양자산업 체계적 육성 기반 마련",
+    enforcementDate: "2024-11-01",
+  },
+];
+
 // ---------------------------------------------------------------------------
 // Lookup helpers
 // ---------------------------------------------------------------------------
@@ -266,6 +294,8 @@ const articlesMap: Record<string, Article[]> = {
   "credit-info": creditInfoArticles,
   "public-data": publicDataArticles,
   "data-industry": dataIndustryArticles,
+  "intelligent-info": intelligentInfoArticles,
+  quantum: quantumArticles,
 };
 
 const amendmentsMap: Record<string, Amendment[]> = {
@@ -279,6 +309,8 @@ const amendmentsMap: Record<string, Amendment[]> = {
   "credit-info": creditInfoAmendments,
   "public-data": publicDataAmendments,
   "data-industry": dataIndustryAmendments,
+  "intelligent-info": intelligentInfoAmendments,
+  quantum: quantumAmendments,
 };
 
 export function getMockArticles(lawId: string): Article[] {
@@ -312,6 +344,10 @@ const creditInfoThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/credi
 const publicDataThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/public-data.json") as ThreeTierRow[];
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const dataIndustryThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/data-industry.json") as ThreeTierRow[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const intelligentInfoThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/intelligent-info.json") as ThreeTierRow[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const quantumThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/quantum.json") as ThreeTierRow[];
 
 const threeTierMap: Record<string, ThreeTierRow[]> = {
   "info-comm": infoCommThreeTier,
@@ -324,6 +360,8 @@ const threeTierMap: Record<string, ThreeTierRow[]> = {
   "credit-info": creditInfoThreeTier,
   "public-data": publicDataThreeTier,
   "data-industry": dataIndustryThreeTier,
+  "intelligent-info": intelligentInfoThreeTier,
+  quantum: quantumThreeTier,
 };
 
 export function getMockThreeTier(lawId: string): ThreeTierRow[] {

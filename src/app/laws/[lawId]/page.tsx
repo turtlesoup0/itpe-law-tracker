@@ -12,165 +12,12 @@ import { ThreeTierView } from "@/components/three-tier-view";
 import { ArticleViewer } from "@/components/article-viewer";
 import { AdminRuleList } from "@/components/admin-rule-list";
 import { TtaTermWidget } from "@/components/tta-term-widget";
-import type { HierarchyNode } from "@/types/law";
+import { HierarchyViewToggle } from "@/components/hierarchy-view-toggle";
+import { getLawHierarchy, getAgencyHierarchy, getRelatedLaws } from "@/lib/data/hierarchy-data";
 
 // ---------------------------------------------------------------------------
-// Cross-reference map: related laws within IT_LAWS
+// Data is now imported from @/lib/data/hierarchy-data
 // ---------------------------------------------------------------------------
-const relatedLawsMap: Record<string, { lawId: string; relation: string }[]> = {
-  "info-comm": [
-    { lawId: "privacy", relation: "개인정보 처리 시 개인정보보호법 적용 (제23조의5·6 연계정보, 제45조의3 CISO 겸직)" },
-    { lawId: "e-gov", relation: "전자정부서비스 연계정보 활용 (제23조의5)" },
-    { lawId: "sw-promotion", relation: "소프트웨어 보안취약점 패치 고지 의무 (제47조의4)" },
-    { lawId: "cloud", relation: "클라우드 기반 정보통신서비스의 정보보호 (제45조, 제46조)" },
-    { lawId: "credit-info", relation: "온라인 금융서비스의 신용정보 처리" },
-  ],
-  "privacy": [
-    { lawId: "info-comm", relation: "정보통신망에서의 개인정보 특례" },
-    { lawId: "credit-info", relation: "신용정보와 개인정보의 관계" },
-    { lawId: "ai-basic", relation: "AI 자동화 의사결정과 정보주체 권리" },
-  ],
-  "sw-promotion": [
-    { lawId: "nat-contract", relation: "공공 SW사업 계약 절차" },
-    { lawId: "cloud", relation: "클라우드 기반 SW 서비스" },
-  ],
-  "ai-basic": [
-    { lawId: "privacy", relation: "AI의 개인정보 처리 규제" },
-    { lawId: "info-comm", relation: "AI 서비스의 정보통신망 이용" },
-    { lawId: "data-industry", relation: "AI 학습용 데이터 활용" },
-  ],
-  "cloud": [
-    { lawId: "e-gov", relation: "공공기관 클라우드 우선 도입" },
-    { lawId: "sw-promotion", relation: "클라우드 SW 대가 산정" },
-    { lawId: "info-comm", relation: "클라우드 서비스의 정보보호" },
-  ],
-  "e-gov": [
-    { lawId: "cloud", relation: "전자정부 클라우드 전환" },
-    { lawId: "public-data", relation: "행정정보의 공공데이터 제공" },
-    { lawId: "info-comm", relation: "전자정부 서비스 정보보호" },
-  ],
-  "nat-contract": [
-    { lawId: "sw-promotion", relation: "SW사업 대가 기준 적용" },
-    { lawId: "cloud", relation: "클라우드 서비스 조달" },
-  ],
-  "credit-info": [
-    { lawId: "privacy", relation: "신용정보 중 개인정보 보호" },
-    { lawId: "info-comm", relation: "온라인 신용정보 서비스" },
-    { lawId: "data-industry", relation: "마이데이터와 데이터 산업" },
-  ],
-  "public-data": [
-    { lawId: "e-gov", relation: "전자정부 데이터 개방" },
-    { lawId: "data-industry", relation: "공공데이터 기반 데이터 산업" },
-  ],
-  "data-industry": [
-    { lawId: "public-data", relation: "공공데이터 활용" },
-    { lawId: "privacy", relation: "데이터 결합 시 개인정보 보호" },
-    { lawId: "credit-info", relation: "금융데이터 활용" },
-  ],
-};
-
-// ---------------------------------------------------------------------------
-// Inline mock data -- will be replaced by Server Actions / MCP calls
-// ---------------------------------------------------------------------------
-const hierarchyMap: Record<string, HierarchyNode[]> = {
-  "info-comm": [
-    {
-      id: "info-comm-law",
-      name: "정보통신망법",
-      fullName: "정보통신망 이용촉진 및 정보보호 등에 관한 법률",
-      type: "법률",
-      color: "blue",
-      children: [
-        {
-          id: "info-comm-decree",
-          name: "정보통신망법 시행령",
-          fullName: "정보통신망 이용촉진 및 정보보호 등에 관한 법률 시행령",
-          type: "시행령",
-          color: "emerald",
-          children: [
-            {
-              id: "info-comm-rule",
-              name: "정보통신망법 시행규칙",
-              fullName:
-                "정보통신망 이용촉진 및 정보보호 등에 관한 법률 시행규칙",
-              type: "시행규칙",
-              color: "amber",
-              children: [],
-            },
-          ],
-        },
-        {
-          id: "info-comm-notice",
-          name: "개인정보의 기술적·관리적 보호조치 기준",
-          fullName: "개인정보의 기술적·관리적 보호조치 기준 (고시)",
-          type: "고시",
-          color: "purple",
-          children: [],
-        },
-      ],
-    },
-  ],
-  privacy: [
-    {
-      id: "privacy-law",
-      name: "개인정보보호법",
-      fullName: "개인정보 보호법",
-      type: "법률",
-      color: "blue",
-      children: [
-        {
-          id: "privacy-decree",
-          name: "개인정보보호법 시행령",
-          fullName: "개인정보 보호법 시행령",
-          type: "시행령",
-          color: "emerald",
-          children: [
-            {
-              id: "privacy-rule",
-              name: "개인정보보호법 시행규칙",
-              fullName: "개인정보 보호법 시행규칙",
-              type: "시행규칙",
-              color: "amber",
-              children: [],
-            },
-          ],
-        },
-        {
-          id: "privacy-notice",
-          name: "개인정보의 안전성 확보조치 기준",
-          fullName: "개인정보의 안전성 확보조치 기준 (고시)",
-          type: "고시",
-          color: "purple",
-          children: [],
-        },
-      ],
-    },
-  ],
-};
-
-// Fallback: generate a default hierarchy for any law
-function getHierarchy(lawId: string, shortName: string): HierarchyNode[] {
-  if (hierarchyMap[lawId]) return hierarchyMap[lawId];
-  return [
-    {
-      id: `${lawId}-law`,
-      name: shortName,
-      fullName: shortName,
-      type: "법률",
-      color: "blue",
-      children: [
-        {
-          id: `${lawId}-decree`,
-          name: `${shortName} 시행령`,
-          fullName: `${shortName} 시행령`,
-          type: "시행령",
-          color: "emerald",
-          children: [],
-        },
-      ],
-    },
-  ];
-}
 
 export default async function LawDetailPage({
   params,
@@ -186,9 +33,10 @@ export default async function LawDetailPage({
 
   const articles = getMockArticles(lawId);
   const amendments = getMockAmendments(lawId);
-  const hierarchy = getHierarchy(lawId, law.shortName);
+  const hierarchy = getLawHierarchy(lawId);
+  const agencyHierarchy = getAgencyHierarchy(lawId);
   const threeTierRows = getMockThreeTier(lawId);
-  const relatedLaws = relatedLawsMap[lawId] ?? [];
+  const relatedLaws = getRelatedLaws(lawId);
 
   return (
     <div className="space-y-6 px-4 sm:px-0">
@@ -222,17 +70,10 @@ export default async function LawDetailPage({
         </TabsList>
 
         <TabsContent value="hierarchy">
-          <Card>
-            <CardHeader>
-              <CardTitle>법령 계층 구조</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                이 법이 어떤 시행령·시행규칙·고시로 구체화되는지 한눈에 파악할 수 있습니다.
-              </p>
-            </CardHeader>
-            <CardContent>
-              <LawHierarchyGraph hierarchy={hierarchy} />
-            </CardContent>
-          </Card>
+          <HierarchyViewToggle
+            lawHierarchy={hierarchy}
+            agencyHierarchy={agencyHierarchy}
+          />
         </TabsContent>
 
         <TabsContent value="articles">

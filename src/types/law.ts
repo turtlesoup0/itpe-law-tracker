@@ -62,9 +62,13 @@ export interface HierarchyNode {
   id: string;
   name: string;
   fullName: string;
-  type: "법률" | "시행령" | "시행규칙" | "고시";
+  type: "법률" | "시행령" | "시행규칙" | "고시" | "연관법" | "기관";
   color: string;
   children: HierarchyNode[];
+  /** 엣지 라벨에 표시할 관계 설명 (예: "위임", "참조", "소관") */
+  relation?: string;
+  /** 연관법인 경우 해당 법의 lawId (링크용) */
+  lawId?: string;
 }
 
 export interface ThreeTierRow {

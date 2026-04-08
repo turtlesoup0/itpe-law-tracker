@@ -18,6 +18,7 @@ export interface Article {
   title: string;
   content: string;
   hang?: ArticleHang[];
+  ho?: ArticleHo[];
   commentary?: string;
 }
 
@@ -25,9 +26,16 @@ export interface ArticleHang {
   number: string;
   content: string;
   ho?: ArticleHo[];
+  mok?: ArticleMok[];
 }
 
 export interface ArticleHo {
+  number: string;
+  content: string;
+  mok?: ArticleMok[];
+}
+
+export interface ArticleMok {
   number: string;
   content: string;
 }

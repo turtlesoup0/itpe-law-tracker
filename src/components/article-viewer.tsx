@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Article, ArticleHang } from "@/types/law";
+import type { Article, ArticleHang, ArticleHo } from "@/types/law";
 import { highlightTerms } from "@/lib/legal-terms";
 
 // ---------------------------------------------------------------------------
@@ -193,6 +193,14 @@ export function ArticleViewer({
                       ))}
                     </div>
                   )}
+                  {/* 항 없이 바로 호가 오는 경우 (예: 제2조 정의) */}
+                  {article.ho && article.ho.length > 0 && (
+                    <ol className="mt-3 space-y-1 list-none pl-0">
+                      {article.ho.map((ho) => (
+                        <HoItem key={ho.number} ho={ho} />
+                      ))}
+                    </ol>
+                  )}
                 </div>
                 {/* 조문 해설 토글 */}
                 {showCommentary && article.commentary && (
@@ -237,7 +245,7 @@ export function ArticleViewer({
 // ---------------------------------------------------------------------------
 function HangItem({ hang }: { hang: ArticleHang }) {
   const hasHo = hang.ho && hang.ho.length > 0;
-  const depthLabel = hasHo ? "조 > 항 > 호" : "조 > 항";
+  const hasMok = hang.mok && hang.mok.length > 0;
   const num = parseHangNumber(hang.number);
 
   return (
@@ -247,29 +255,59 @@ function HangItem({ hang }: { hang: ArticleHang }) {
           {circledNumber(num)}
         </span>{" "}
         {highlightTerms(hang.content)}
-        <span className="ml-2 text-[10px] text-muted-foreground/60 select-none">
-          [{depthLabel}]
-        </span>
       </div>
       {hasHo && (
         <ol className="mt-1 ml-4 space-y-1 list-none pl-0">
-          {hang.ho!.map((ho) => {
-            const hoNum = parseHoNumber(ho.number);
-            return (
-              <li
-                key={ho.number}
-                className="text-sm text-foreground/75 dark:text-foreground/85 pl-3 border-l border-slate-300 dark:border-slate-600"
-              >
-                <span className="font-medium text-foreground">
-                  {hoLabel(hoNum)}.
-                </span>{" "}
-                {highlightTerms(ho.content)}
-              </li>
-            );
-          })}
+          {hang.ho!.map((ho) => (
+            <HoItem key={ho.number} ho={ho} />
+          ))}
+        </ol>
+      )}
+      {hasMok && (
+        <ol className="mt-1 ml-6 space-y-0.5 list-none pl-0">
+          {hang.mok!.map((m) => (
+            <MokItem key={m.number} mok={m} />
+          ))}
         </ol>
       )}
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 호(Ho) 렌더링 컴포넌트
+// ---------------------------------------------------------------------------
+function HoItem({ ho }: { ho: ArticleHo }) {
+  const hoNum = parseHoNumber(ho.number);
+  const hasMok = ho.mok && ho.mok.length > 0;
+  // 숫자형 호번호인 경우 (1, 2, 3...) 숫자 라벨, 한글형(가,나,다)인 경우 한글 라벨
+  const isNumeric = /^\d/.test(ho.number);
+  const label = isNumeric ? `${ho.number}.` : `${hoLabel(hoNum)}.`;
+
+  return (
+    <li className="text-sm text-foreground/75 dark:text-foreground/85 pl-3 border-l border-slate-300 dark:border-slate-600">
+      <span className="font-medium text-foreground">{label}</span>{" "}
+      {highlightTerms(ho.content)}
+      {hasMok && (
+        <ol className="mt-1 ml-4 space-y-0.5 list-none pl-0">
+          {ho.mok!.map((m) => (
+            <MokItem key={m.number} mok={m} />
+          ))}
+        </ol>
+      )}
+    </li>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 목(Mok) 렌더링 컴포넌트
+// ---------------------------------------------------------------------------
+function MokItem({ mok }: { mok: { number: string; content: string } }) {
+  return (
+    <li className="text-sm text-foreground/65 dark:text-foreground/75 pl-3 border-l border-dashed border-slate-300 dark:border-slate-600">
+      <span className="font-medium text-foreground/80">{mok.number}.</span>{" "}
+      {highlightTerms(mok.content)}
+    </li>
   );
 }
 

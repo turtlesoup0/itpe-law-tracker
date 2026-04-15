@@ -1,33 +1,59 @@
 import { NextResponse } from "next/server";
 import { IT_LAWS } from "@/lib/utils/law-constants";
-import { getLawHistory, compareOldNew } from "@/lib/mcp/mcp-client";
+import { fetchLatestLawInfo } from "@/lib/mcp/law-api";
+import type { LatestLawInfo } from "@/lib/mcp/law-api";
 import * as fs from "fs";
 import * as path from "path";
 
 // ---------------------------------------------------------------------------
-// Compare JSON 파일 관리
+// Compare JSON 파일 관리 (읽기 전용 — 저장된 최신 공포일 확인용)
 // ---------------------------------------------------------------------------
 
 const COMPARE_DIR = path.join(process.cwd(), "src/lib/data/compare");
 
-function readCompareJson(lawId: string): Record<string, unknown> {
+/** compare JSON에서 가장 최근 개정의 공포일(YYYY-MM-DD)을 반환 */
+function getStoredLatestDate(lawId: string): string | null {
   const filePath = path.join(COMPARE_DIR, `${lawId}.json`);
   try {
-    return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    const data = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    let latest: string | null = null;
+    for (const entry of Object.values(data)) {
+      const e = entry as { amendmentDate?: string };
+      if (e.amendmentDate && (!latest || e.amendmentDate > latest)) {
+        latest = e.amendmentDate;
+      }
+    }
+    return latest;
   } catch {
-    return {};
+    return null;
   }
 }
 
-function getLatestAmendmentDate(data: Record<string, unknown>): string | null {
-  let latest: string | null = null;
-  for (const entry of Object.values(data)) {
-    const e = entry as { amendmentDate?: string };
-    if (e.amendmentDate && (!latest || e.amendmentDate > latest)) {
-      latest = e.amendmentDate;
-    }
-  }
-  return latest;
+/** YYYYMMDD → YYYY-MM-DD */
+function formatDate(ymd: string): string {
+  if (ymd.length !== 8) return ymd;
+  return `${ymd.slice(0, 4)}-${ymd.slice(4, 6)}-${ymd.slice(6, 8)}`;
+}
+
+// ---------------------------------------------------------------------------
+// 결과 타입
+// ---------------------------------------------------------------------------
+
+interface CheckResult {
+  lawId: string;
+  lawName: string;
+  status: "no_change" | "new_amendment_detected" | "error";
+  storedLatest?: string;
+  apiLatest?: string;
+  amendmentType?: string;
+  message?: string;
+}
+
+interface Alert {
+  lawId: string;
+  lawName: string;
+  type: "new_amendment";
+  message: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -44,132 +70,62 @@ export async function GET(request: Request) {
   }
 
   const today = new Date();
-  const results: {
-    lawId: string;
-    lawName: string;
-    status: "no_change" | "new_amendment_detected" | "error";
-    latestDate?: string;
-    message?: string;
-  }[] = [];
+  const results: CheckResult[] = [];
+  const alerts: Alert[] = [];
 
-  const alerts: {
-    lawId: string;
-    lawName: string;
-    type: string;
-    message: string;
-  }[] = [];
-
+  // -----------------------------------------------------------------------
+  // 각 IT법에 대해 법제처 API로 최신 공포일 조회 → 저장된 날짜와 비교
+  // -----------------------------------------------------------------------
   for (const law of IT_LAWS) {
     try {
-      // 1. 현재 저장된 최신 개정일
-      const currentData = readCompareJson(law.id);
-      const savedLatest = getLatestAmendmentDate(currentData);
+      const info: LatestLawInfo | null = await fetchLatestLawInfo(law.mst);
 
-      // 2. MCP에서 최신 개정이력 조회
-      const history = await getLawHistory(law.mst);
-
-      if (history.length === 0) {
+      if (!info) {
         results.push({
           lawId: law.id,
           lawName: law.shortName,
-          status: "no_change",
-          latestDate: savedLatest || undefined,
-          message: "MCP 이력 조회 결과 없음",
+          status: "error",
+          message: "법제처 API 응답 없음",
         });
         continue;
       }
 
-      // 3. MCP 최신 개정일 vs 저장된 최신 개정일 비교
-      const mcpLatest = history
-        .map((h) => h.amendmentDate)
-        .filter(Boolean)
-        .sort()
-        .reverse()[0];
+      // 법제처 최신 공포일 (YYYYMMDD → YYYY-MM-DD)
+      const apiLatest = formatDate(info.promulgationDate);
+      const storedLatest = getStoredLatestDate(law.id);
 
-      if (!mcpLatest || (savedLatest && mcpLatest <= savedLatest)) {
-        // 변경 없음 — 시행 예정 알림만 체크
-        for (const h of history) {
-          if (!h.enforcementDate) continue;
-          const enfDate = new Date(h.enforcementDate);
-          const daysUntil = Math.ceil(
-            (enfDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-          );
-          if ([90, 60, 30, 7].includes(daysUntil)) {
-            alerts.push({
-              lawId: law.id,
-              lawName: law.shortName,
-              type: "enforcement_upcoming",
-              message: `${law.shortName} ${h.amendmentType} 시행 D-${daysUntil} (${h.enforcementDate})`,
-            });
-          }
-        }
-
+      if (storedLatest && apiLatest <= storedLatest) {
+        // 변경 없음
         results.push({
           lawId: law.id,
           lawName: law.shortName,
           status: "no_change",
-          latestDate: savedLatest || undefined,
+          storedLatest,
+          apiLatest,
         });
       } else {
-        // 4. 새 개정 감지! → compare_old_new로 상세 데이터 수집
-        const compareData = await compareOldNew(law.mst);
+        // 새 개정 감지!
+        results.push({
+          lawId: law.id,
+          lawName: law.shortName,
+          status: "new_amendment_detected",
+          storedLatest: storedLatest ?? "(없음)",
+          apiLatest,
+          amendmentType: info.amendmentType,
+          message: `${info.amendmentType} (공포일 ${apiLatest}, 시행일 ${formatDate(info.enforcementDate)})`,
+        });
 
-        if (compareData && compareData.items?.length > 0) {
-          // 새 entry ID 생성
-          const amdId = `amd-${law.id.split("-")[0]}-${String(Object.keys(currentData).length + 1).padStart(3, "0")}`;
+        alerts.push({
+          lawId: law.id,
+          lawName: law.shortName,
+          type: "new_amendment",
+          message: `${law.shortName} 새 개정 감지: ${info.amendmentType} (공포일 ${apiLatest}), 저장된 최신: ${storedLatest ?? "없음"}`,
+        });
 
-          const newEntry = {
-            amendmentDate: compareData.amendmentDate,
-            enforcementDate: compareData.enforcementDate,
-            lawNo: compareData.lawNo,
-            mst: law.mst,
-            amendmentType: compareData.amendmentType,
-            amendmentReason: compareData.amendmentReason || "",
-            items: compareData.items.map((item) => ({
-              articleNo: item.articleNo,
-              oldText: item.oldText,
-              newText: item.newText,
-              changeType: item.changeType as "신설" | "삭제" | "변경",
-              amendmentDate: compareData.amendmentDate,
-              enforcementDate: compareData.enforcementDate,
-              // summary 필드는 Phase 2의 generate-summaries cron이 채움
-            })),
-          };
-
-          // JSON 파일 업데이트 (Vercel에서는 read-only이므로 로그만 남김)
-          // 로컬 개발/수동 실행 시에만 파일 쓰기
-          const isWritable = process.env.NODE_ENV === "development" || process.env.ALLOW_FILE_WRITE === "true";
-          if (isWritable) {
-            const updated = { ...currentData, [amdId]: newEntry };
-            const filePath = path.join(COMPARE_DIR, `${law.id}.json`);
-            fs.writeFileSync(filePath, JSON.stringify(updated, null, 2), "utf-8");
-          }
-
-          alerts.push({
-            lawId: law.id,
-            lawName: law.shortName,
-            type: "new_amendment",
-            message: `${law.shortName} 새 개정 감지: ${compareData.amendmentType} (${compareData.amendmentDate}), ${compareData.items.length}개 조문 변경`,
-          });
-
-          results.push({
-            lawId: law.id,
-            lawName: law.shortName,
-            status: "new_amendment_detected",
-            latestDate: mcpLatest,
-            message: `${compareData.items.length}개 조문 변경 감지 (${amdId})`,
-          });
-        } else {
-          results.push({
-            lawId: law.id,
-            lawName: law.shortName,
-            status: "no_change",
-            latestDate: mcpLatest,
-            message: "새 개정일자 발견했으나 compare 데이터 없음",
-          });
-        }
+        console.log(`[check-amendments] 🔔 ${law.shortName}: ${info.amendmentType}, 공포일 ${apiLatest} (저장된 최신: ${storedLatest ?? "없음"})`);
       }
     } catch (err) {
+      console.error(`[check-amendments] ${law.shortName} 실패:`, err);
       results.push({
         lawId: law.id,
         lawName: law.shortName,
@@ -179,14 +135,19 @@ export async function GET(request: Request) {
     }
   }
 
-  // TODO Phase 2: 새 개정 감지 시 알림 발송 (Resend 이메일, Web Push)
-
-  return NextResponse.json({
+  // -----------------------------------------------------------------------
+  // 응답
+  // -----------------------------------------------------------------------
+  const response = {
     checkedAt: today.toISOString(),
     lawsChecked: IT_LAWS.length,
     newAmendments: results.filter((r) => r.status === "new_amendment_detected").length,
+    errors: results.filter((r) => r.status === "error").length,
     alertsGenerated: alerts.length,
     results,
     alerts,
-  });
+  };
+
+  console.log(`[check-amendments] 완료: ${IT_LAWS.length}개 법령 체크, 새 개정 ${response.newAmendments}건, 에러 ${response.errors}건`);
+  return NextResponse.json(response);
 }

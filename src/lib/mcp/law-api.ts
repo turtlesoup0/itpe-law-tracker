@@ -201,3 +201,57 @@ export async function fetchCompareData(
     changeMeta: {},
   };
 }
+
+// ---------------------------------------------------------------------------
+// (e) fetchLatestLawInfo — cron용: MST로 최신 공포일·개정구분 조회
+// ---------------------------------------------------------------------------
+
+export interface LatestLawInfo {
+  lawName: string;
+  amendmentType: string;  // 일부개정, 타법개정, 전부개정 등
+  promulgationDate: string; // YYYYMMDD
+  enforcementDate: string;  // YYYYMMDD
+  promulgationNo: string;
+}
+
+/**
+ * 법제처 API로 법령의 현행 최신 정보를 조회합니다.
+ * cron에서 저장된 공포일과 비교하여 새 개정 여부를 판단합니다.
+ */
+export async function fetchLatestLawInfo(
+  mst: string,
+): Promise<LatestLawInfo | null> {
+  try {
+    const url = `${BASE_URL}/lawService.do?OC=${OC}&target=law&MST=${mst}&type=JSON`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      console.error(`[law-api] fetchLatestLawInfo HTTP ${res.status} for MST=${mst}`);
+      return null;
+    }
+
+    const json = await res.json();
+
+    // 인증 실패 체크
+    if (json?.result && json?.msg) {
+      console.error(`[law-api] API auth error: ${json.msg}`);
+      return null;
+    }
+
+    const law = json?.법령;
+    if (!law) return null;
+
+    const info = law?.기본정보;
+    if (!info) return null;
+
+    return {
+      lawName: String(info?.법령명_한글 ?? ""),
+      amendmentType: String(info?.제개정구분 ?? info?.제개정구분명 ?? ""),
+      promulgationDate: String(info?.공포일자 ?? ""),
+      enforcementDate: String(info?.시행일자 ?? ""),
+      promulgationNo: String(info?.공포번호 ?? ""),
+    };
+  } catch (err) {
+    console.error(`[law-api] fetchLatestLawInfo error for MST=${mst}:`, err);
+    return null;
+  }
+}

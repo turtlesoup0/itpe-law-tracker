@@ -78,7 +78,7 @@ export async function GET(request: Request) {
   // -----------------------------------------------------------------------
   for (const law of IT_LAWS) {
     try {
-      const info: LatestLawInfo | null = await fetchLatestLawInfo(law.mst);
+      const info: LatestLawInfo | null = await fetchLatestLawInfo(law.lawId, law.mst);
 
       if (!info) {
         results.push({

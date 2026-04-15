@@ -215,43 +215,53 @@ export interface LatestLawInfo {
 }
 
 /**
- * 법제처 API로 법령의 현행 최신 정보를 조회합니다.
+ * 법제처 웹 엔드포인트로 법령의 현행 최신 정보를 조회합니다.
+ * OC 키/IP 인증이 불필요한 lsRvsDocInfoR.do를 사용합니다.
  * cron에서 저장된 공포일과 비교하여 새 개정 여부를 판단합니다.
+ *
+ * @param lawId - 법령ID (예: "000030")
+ * @param mst - 법령MST/lsiSeq (예: "277377")
  */
 export async function fetchLatestLawInfo(
+  lawId: string,
   mst: string,
 ): Promise<LatestLawInfo | null> {
   try {
-    const url = `${BASE_URL}/lawService.do?OC=${OC}&target=law&MST=${mst}&type=JSON`;
+    // lsRvsDocInfoR.do — OC 불필요, 어디서든 접근 가능
+    const url = `https://www.law.go.kr/LSW/lsRvsDocInfoR.do?lsId=${lawId}&lsiSeq=${mst}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) {
-      console.error(`[law-api] fetchLatestLawInfo HTTP ${res.status} for MST=${mst}`);
+      console.error(`[law-api] fetchLatestLawInfo HTTP ${res.status} for lawId=${lawId}`);
       return null;
     }
 
-    const json = await res.json();
+    const html = await res.text();
 
-    // 인증 실패 체크
-    if (json?.result && json?.msg) {
-      console.error(`[law-api] API auth error: ${json.msg}`);
+    // hidden input에서 메타데이터 추출
+    const get = (id: string): string => {
+      const m = html.match(new RegExp(`id="${id}"\\s+value="([^"]*)"`));
+      return m?.[1] ?? "";
+    };
+
+    const lawName = get("lsNm");
+    const promulgationDate = get("ancYd");   // 공포일 YYYYMMDD
+    const enforcementDate = get("efYd");     // 시행일 YYYYMMDD
+    const promulgationNo = get("ancNo");     // 공포번호
+
+    if (!promulgationDate) {
+      console.error(`[law-api] fetchLatestLawInfo: no ancYd for lawId=${lawId}`);
       return null;
     }
-
-    const law = json?.법령;
-    if (!law) return null;
-
-    const info = law?.기본정보;
-    if (!info) return null;
 
     return {
-      lawName: String(info?.법령명_한글 ?? ""),
-      amendmentType: String(info?.제개정구분 ?? info?.제개정구분명 ?? ""),
-      promulgationDate: String(info?.공포일자 ?? ""),
-      enforcementDate: String(info?.시행일자 ?? ""),
-      promulgationNo: String(info?.공포번호 ?? ""),
+      lawName,
+      amendmentType: "",  // 이 엔드포인트에서는 개정구분 미제공
+      promulgationDate,
+      enforcementDate,
+      promulgationNo,
     };
   } catch (err) {
-    console.error(`[law-api] fetchLatestLawInfo error for MST=${mst}:`, err);
+    console.error(`[law-api] fetchLatestLawInfo error for lawId=${lawId}:`, err);
     return null;
   }
 }

@@ -226,16 +226,22 @@ export async function fetchLatestLawInfo(
   lawId: string,
   mst: string,
 ): Promise<LatestLawInfo | null> {
-  try {
-    // lsRvsDocInfoR.do — OC 불필요, 어디서든 접근 가능
-    const url = `https://www.law.go.kr/LSW/lsRvsDocInfoR.do?lsId=${lawId}&lsiSeq=${mst}`;
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) {
-      console.error(`[law-api] fetchLatestLawInfo HTTP ${res.status} for lawId=${lawId}`);
-      return null;
-    }
+  const url = `https://www.law.go.kr/LSW/lsRvsDocInfoR.do?lsId=${lawId}&lsiSeq=${mst}`;
 
-    const html = await res.text();
+  // 최대 2회 재시도 (법제처 rate limit 대응)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      if (attempt > 0) {
+        await new Promise((r) => setTimeout(r, 1000 * attempt));
+      }
+
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) {
+        console.error(`[law-api] fetchLatestLawInfo HTTP ${res.status} for lawId=${lawId} (attempt ${attempt + 1})`);
+        continue;
+      }
+
+      const html = await res.text();
 
     // hidden input에서 메타데이터 추출
     const get = (id: string): string => {
@@ -253,15 +259,18 @@ export async function fetchLatestLawInfo(
       return null;
     }
 
-    return {
-      lawName,
-      amendmentType: "",  // 이 엔드포인트에서는 개정구분 미제공
-      promulgationDate,
-      enforcementDate,
-      promulgationNo,
-    };
-  } catch (err) {
-    console.error(`[law-api] fetchLatestLawInfo error for lawId=${lawId}:`, err);
-    return null;
+      return {
+        lawName,
+        amendmentType: "",  // 이 엔드포인트에서는 개정구분 미제공
+        promulgationDate,
+        enforcementDate,
+        promulgationNo,
+      };
+    } catch (err) {
+      console.error(`[law-api] fetchLatestLawInfo error for lawId=${lawId} (attempt ${attempt + 1}):`, err);
+      if (attempt === 2) return null;
+    }
   }
+
+  return null;
 }

@@ -73,10 +73,16 @@ export async function GET(request: Request) {
   const results: CheckResult[] = [];
   const alerts: Alert[] = [];
 
+  /** 법제처 rate limit 방지용 딜레이 */
+  const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
   // -----------------------------------------------------------------------
   // 각 IT법에 대해 법제처 API로 최신 공포일 조회 → 저장된 날짜와 비교
+  // 법제처 서버 rate limit 방지를 위해 요청 간 500ms 딜레이
   // -----------------------------------------------------------------------
-  for (const law of IT_LAWS) {
+  for (let i = 0; i < IT_LAWS.length; i++) {
+    if (i > 0) await delay(500);
+    const law = IT_LAWS[i];
     try {
       const info: LatestLawInfo | null = await fetchLatestLawInfo(law.lawId, law.mst);
 

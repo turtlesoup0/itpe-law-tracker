@@ -1,6 +1,11 @@
 /**
- * 법제처 Open API 호출 레이어
- * - 법령 검색, 신구대조표, 제·개정이유 조회
+ * 법제처 API 호출 레이어
+ *
+ * 두 가지 접근 경로:
+ * 1. DRF Open API (OC 키 + IP 등록 필요) — 로컬 개발 전용
+ *    searchLawMeta, fetchCompareOldNew, fetchAmendmentReason, fetchCompareData
+ * 2. 웹 엔드포인트 (인증 불필요) — Vercel 포함 어디서든 동작
+ *    fetchLatestLawInfo
  */
 
 import type { CompareApiResponse, CompareOldNewItem } from "@/types/law";
@@ -23,6 +28,11 @@ const LAW_SEARCH_MAP: Record<string, string> = {
   "data-industry": "데이터 산업진흥",
 };
 
+/**
+ * ⚠️ DRF API는 OC 키 + 서버 IP 등록이 필요합니다.
+ * Vercel serverless(동적 IP)에서는 인증 실패합니다.
+ * 로컬 개발 환경에서만 사용하세요.
+ */
 const OC = "itpe_law_follower";
 const BASE_URL = "http://www.law.go.kr/DRF";
 
@@ -243,21 +253,21 @@ export async function fetchLatestLawInfo(
 
       const html = await res.text();
 
-    // hidden input에서 메타데이터 추출
-    const get = (id: string): string => {
-      const m = html.match(new RegExp(`id="${id}"\\s+value="([^"]*)"`));
-      return m?.[1] ?? "";
-    };
+      // hidden input에서 메타데이터 추출
+      const get = (id: string): string => {
+        const m = html.match(new RegExp(`id="${id}"\\s+value="([^"]*)"`));
+        return m?.[1] ?? "";
+      };
 
-    const lawName = get("lsNm");
-    const promulgationDate = get("ancYd");   // 공포일 YYYYMMDD
-    const enforcementDate = get("efYd");     // 시행일 YYYYMMDD
-    const promulgationNo = get("ancNo");     // 공포번호
+      const lawName = get("lsNm");
+      const promulgationDate = get("ancYd");   // 공포일 YYYYMMDD
+      const enforcementDate = get("efYd");     // 시행일 YYYYMMDD
+      const promulgationNo = get("ancNo");     // 공포번호
 
-    if (!promulgationDate) {
-      console.error(`[law-api] fetchLatestLawInfo: no ancYd for lawId=${lawId}`);
-      return null;
-    }
+      if (!promulgationDate) {
+        console.error(`[law-api] fetchLatestLawInfo: no ancYd for lawId=${lawId} (attempt ${attempt + 1})`);
+        continue;
+      }
 
       return {
         lawName,

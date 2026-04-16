@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "generate-manifest": "npx tsx scripts/generate-law-manifest.ts",
+    "prebuild": "npx tsx scripts/generate-law-manifest.ts",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -18,7 +20,7 @@
     "diff2html": "^3.4.56",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.7.0",
-    "next": "16.2.2",
+    "next": "^16.2.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.10.0",
@@ -31,7 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "drizzle-kit": "^0.31.10",
+    "drizzle-kit": "^0.18.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",

@@ -11,9 +11,11 @@ import { LawHierarchyGraph } from "@/components/law-hierarchy-graph";
 import { ThreeTierView } from "@/components/three-tier-view";
 import { ArticleViewer } from "@/components/article-viewer";
 import { AdminRuleList } from "@/components/admin-rule-list";
+import { RelatedGuidelines } from "@/components/related-guidelines";
 import { TtaTermWidget } from "@/components/tta-term-widget";
 import { HierarchyViewToggle } from "@/components/hierarchy-view-toggle";
 import { getLawHierarchy, getAgencyHierarchy, getRelatedLaws } from "@/lib/data/hierarchy-data";
+import { getRelatedGuidelines, getManifestMeta } from "@/lib/data/guideline-manifest-reader";
 
 // ---------------------------------------------------------------------------
 // Data is now imported from @/lib/data/hierarchy-data
@@ -37,6 +39,8 @@ export default async function LawDetailPage({
   const agencyHierarchy = getAgencyHierarchy(lawId);
   const threeTierRows = getMockThreeTier(lawId);
   const relatedLaws = getRelatedLaws(lawId);
+  const relatedGuidelines = getRelatedGuidelines(lawId);
+  const manifestMeta = getManifestMeta();
 
   return (
     <div className="space-y-6 px-4 sm:px-0">
@@ -155,6 +159,23 @@ export default async function LawDetailPage({
                 <AdminRuleList lawId={lawId} lawShortName={law.shortName} />
               </CardContent>
             </Card>
+
+            {relatedGuidelines.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>관련 실무 가이드라인</CardTitle>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    위 고시에 대응하는 실무 가이드라인·안내서를 확인합니다.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <RelatedGuidelines
+                    guidelines={relatedGuidelines}
+                    stale={manifestMeta?.stale}
+                  />
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
 

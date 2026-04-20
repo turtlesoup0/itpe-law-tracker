@@ -87,11 +87,17 @@ async function generateSummary(item: CompareItem): Promise<string> {
 // ---------------------------------------------------------------------------
 
 export async function GET(request: Request) {
-  // 인증
+  // 인증 — CRON_SECRET 필수
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json(
+      { error: "CRON_SECRET not configured" },
+      { status: 503 },
+    );
+  }
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

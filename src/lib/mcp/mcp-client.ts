@@ -7,7 +7,11 @@
  */
 
 const MCP_BASE = process.env.MCP_BASE_URL || "https://korean-law-mcp.fly.dev";
-const MCP_API_KEY = process.env.MCP_API_KEY || "itpe_law_follower";
+const MCP_API_KEY = process.env.MCP_API_KEY || "";
+
+if (!MCP_API_KEY && process.env.NODE_ENV === "production") {
+  console.warn("[mcp-client] MCP_API_KEY 미설정 — MCP 호출이 실패할 수 있습니다");
+}
 
 // ---------------------------------------------------------------------------
 // MCP Streamable HTTP 세션 관리

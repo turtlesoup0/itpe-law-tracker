@@ -33,8 +33,8 @@ const LAW_SEARCH_MAP: Record<string, string> = {
  * - IP/도메인 등록제가 아니라 OC 인증키만으로 관리됩니다.
  * - 단, Referer 헤더가 없으면 OC 유효 여부와 무관하게
  *   "사용자 정보 검증에 실패하였습니다"로 거부되므로 반드시 주입해야 합니다.
- * - Referer만 있으면 Vercel serverless(동적 IP)에서도 동작할 가능성이 높음
- *   (프로덕션 배포 후 실제 검증 필요).
+ * - Referer만 있으면 Vercel serverless(동적 IP)에서도 정상 동작
+ *   (2026-08-18 프로덕션 /api/compare 호출로 검증 완료).
  */
 const OC = "itpe_law_follower";
 const BASE_URL = "http://www.law.go.kr/DRF";

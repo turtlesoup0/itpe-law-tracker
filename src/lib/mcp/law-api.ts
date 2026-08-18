@@ -2,9 +2,9 @@
  * 법제처 API 호출 레이어
  *
  * 두 가지 접근 경로:
- * 1. DRF Open API (OC 키 + IP 등록 필요) — 로컬 개발 전용
+ * 1. DRF Open API (OC 인증키 + Referer 헤더 필요, LR-011)
  *    searchLawMeta, fetchCompareOldNew, fetchAmendmentReason, fetchCompareData
- * 2. 웹 엔드포인트 (인증 불필요) — Vercel 포함 어디서든 동작
+ * 2. 웹 엔드포인트 (인증 불필요)
  *    fetchLatestLawInfo
  */
 
@@ -29,12 +29,16 @@ const LAW_SEARCH_MAP: Record<string, string> = {
 };
 
 /**
- * ⚠️ DRF API는 OC 키 + 서버 IP 등록이 필요합니다.
- * Vercel serverless(동적 IP)에서는 인증 실패합니다.
- * 로컬 개발 환경에서만 사용하세요.
+ * 법제처 DRF API 인증 (LR-011):
+ * - IP/도메인 등록제가 아니라 OC 인증키만으로 관리됩니다.
+ * - 단, Referer 헤더가 없으면 OC 유효 여부와 무관하게
+ *   "사용자 정보 검증에 실패하였습니다"로 거부되므로 반드시 주입해야 합니다.
+ * - Referer만 있으면 Vercel serverless(동적 IP)에서도 동작할 가능성이 높음
+ *   (프로덕션 배포 후 실제 검증 필요).
  */
 const OC = "itpe_law_follower";
 const BASE_URL = "http://www.law.go.kr/DRF";
+const DRF_HEADERS = { Referer: "https://www.law.go.kr/" };
 
 // ---------------------------------------------------------------------------
 // Types (internal)
@@ -58,7 +62,7 @@ export async function searchLawMeta(
 
   try {
     const url = `${BASE_URL}/lawSearch.do?OC=${OC}&target=law&type=JSON&query=${encodeURIComponent(searchTerm)}&display=5`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { headers: DRF_HEADERS, next: { revalidate: 3600 } });
     if (!res.ok) return null;
 
     const json = await res.json();
@@ -102,7 +106,7 @@ export async function fetchCompareOldNew(
 } | null> {
   try {
     const url = `${BASE_URL}/lawService.do?OC=${OC}&target=law&MST=${mst}&type=JSON`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { headers: DRF_HEADERS, next: { revalidate: 3600 } });
     if (!res.ok) return null;
 
     const json = await res.json();
@@ -158,7 +162,7 @@ export async function fetchAmendmentReason(
 ): Promise<string | null> {
   try {
     const url = `${BASE_URL}/lawService.do?OC=${OC}&target=law&MST=${mst}&type=JSON`;
-    const res = await fetch(url, { next: { revalidate: 3600 } });
+    const res = await fetch(url, { headers: DRF_HEADERS, next: { revalidate: 3600 } });
     if (!res.ok) return null;
 
     const json = await res.json();

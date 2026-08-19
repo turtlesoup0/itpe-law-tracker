@@ -121,6 +121,18 @@ export const IT_LAWS: Law[] = [
     description: "양자과학기술 연구기반 조성 및 양자산업의 체계적 육성",
     color: "emerald",
   },
+  {
+    id: "aidc",
+    lawId: "015145",
+    mst: "286707",
+    name: "인공지능 데이터센터 산업 진흥에 관한 특별법",
+    shortName: "AIDC특별법",
+    category: "산업진흥",
+    description:
+      "AI 데이터센터의 인허가 일괄처리·개별법 특례·특구 지정을 통한 신속 구축 지원",
+    color: "emerald",
+    enforcementDate: "2027-03-10",
+  },
 ];
 
 export function getLawById(id: string): Law | undefined {
@@ -129,6 +141,27 @@ export function getLawById(id: string): Law | undefined {
 
 export function getLawsByCategory(category: LawCategory): Law[] {
   return IT_LAWS.filter((law) => law.category === category);
+}
+
+/** Date → 로컬 기준 "YYYY-MM-DD" (toISOString 은 UTC 라 자정 근처에서 하루 어긋난다) */
+function localISODate(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/**
+ * 공포됐으나 아직 시행되지 않은 법령이면 시행예정일을, 아니면 null 을 반환한다.
+ *
+ * 별도 status 필드를 두지 않고 enforcementDate 에서 파생시킨다 — 시행일이 지나면
+ * 자동으로 현행법으로 전환되므로 데이터를 손으로 갱신할 필요가 없고, 상태가
+ * 어긋날 여지도 없다.
+ */
+export function getPendingEnforcementDate(
+  law: Law,
+  now: Date = new Date(),
+): string | null {
+  if (!law.enforcementDate) return null;
+  return law.enforcementDate > localISODate(now) ? law.enforcementDate : null;
 }
 
 export const CATEGORIES: { label: string; value: LawCategory; color: string }[] = [

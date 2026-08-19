@@ -294,6 +294,36 @@ const baseLawHierarchy: Record<string, HierarchyNode[]> = {
       ],
     },
   ],
+  aidc: [
+    {
+      id: "aidc-law",
+      name: "AIDC특별법",
+      fullName: "인공지능 데이터센터 산업 진흥에 관한 특별법",
+      type: "법률",
+      color: "blue",
+      children: [
+        {
+          id: "aidc-decree",
+          name: "AIDC특별법 시행령 (미제정)",
+          fullName: "인공지능 데이터센터 산업 진흥에 관한 특별법 시행령 — 2026-08-19 기준 미제정",
+          type: "시행령",
+          color: "emerald",
+          relation: "본법 시행일(2027-03-10) 이전 제정 예정",
+          children: [
+            {
+              id: "aidc-rule",
+              name: "AIDC특별법 시행규칙 (미제정)",
+              fullName: "인공지능 데이터센터 산업 진흥에 관한 특별법 시행규칙 — 2026-08-19 기준 미제정",
+              type: "시행규칙",
+              color: "amber",
+              relation: "제12조④·제13조·제18조③ 부령 위임",
+              children: [],
+            },
+          ],
+        },
+      ],
+    },
+  ],
 };
 
 // ---------------------------------------------------------------------------
@@ -360,6 +390,10 @@ const relatedLawsMap: Record<string, { lawId: string; relation: string }[]> = {
   quantum: [
     { lawId: "sw-promotion", relation: "소프트웨어 정의 참조 (제2조)" },
     { lawId: "intelligent-info", relation: "지능정보기술 연계" },
+  ],
+  aidc: [
+    { lawId: "ai-basic", relation: "AI·AI데이터센터 정의 및 국가인공지능전략위원회 (제2조, 제18조⑥)" },
+    { lawId: "intelligent-info", relation: "데이터센터 전환 대상 (제19조①3호)" },
   ],
 };
 
@@ -961,6 +995,56 @@ const agencyHierarchyData: Record<string, HierarchyNode[]> = {
       type: "기관",
       color: "rose",
       relation: "보안위협 기밀 유지 판단 (제10조③ 단서)",
+      children: [],
+    },
+  ],
+
+  // ── AIDC특별법: 조문 분석 기반 ──
+  aidc: [
+    {
+      id: "aidc-agency-msit",
+      name: "과기정통부장관",
+      fullName: "과학기술정보통신부장관 (다수 조문)",
+      type: "기관",
+      color: "rose",
+      relation: "기본계획 반영, 신고 수리, 인허가 일괄처리, 특구 지정 (제5조②·제10조·제18조·제24조)",
+      children: [
+        {
+          id: "aidc-agency-committee",
+          name: "국가인공지능전략위원회",
+          fullName: "국가인공지능전략위원회 (AI기본법 제7조)",
+          type: "기관",
+          color: "rose",
+          relation: "일괄처리·특구 지정·특구 비용지원 심의ㆍ의결 (제18조⑥·제24조①·제26조⑤)",
+          children: [],
+        },
+        {
+          id: "aidc-agency-dedicated",
+          name: "전담기관",
+          fullName: "전담기관 (제9조) — 지정 전",
+          type: "기관",
+          color: "rose",
+          relation: "실태조사·인력양성·일괄처리 및 규제개선 신청 지원 (제9조②)",
+          children: [],
+        },
+        {
+          id: "aidc-agency-association",
+          name: "AIDC 협회",
+          fullName: "인공지능 데이터센터 관련 협회 (제11조) — 설립 전",
+          type: "기관",
+          color: "rose",
+          relation: "과기정통부장관 인가 법인 (제11조①)",
+          children: [],
+        },
+      ],
+    },
+    {
+      id: "aidc-agency-related",
+      name: "관계기관",
+      fullName: "관계 중앙행정기관ㆍ지방자치단체 (제18조④)",
+      type: "기관",
+      color: "rose",
+      relation: "인허가등 검토 결과 통지 의무 — 150일/90일/40일 (제18조⑦)",
       children: [],
     },
   ],

@@ -27,6 +27,8 @@ const dataIndustryArticles: Article[] = require("@/lib/data/articles/data-indust
 const intelligentInfoArticles: Article[] = require("@/lib/data/articles/intelligent-info.json") as Article[];
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const quantumArticles: Article[] = require("@/lib/data/articles/quantum.json") as Article[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const aidcArticles: Article[] = require("@/lib/data/articles/aidc.json") as Article[];
 
 // ---------------------------------------------------------------------------
 // 제·개정이유 데이터 — 법제처 API 실데이터
@@ -296,7 +298,21 @@ const articlesMap: Record<string, Article[]> = {
   "data-industry": dataIndustryArticles,
   "intelligent-info": intelligentInfoArticles,
   quantum: quantumArticles,
+  aidc: aidcArticles,
 };
+
+// AIDC특별법 — 제정 (2026-06-09 공포 법률 제21759호, 2027-03-10 시행)
+const aidcAmendments: Amendment[] = [
+  {
+    id: "amd-aidc-001",
+    lawId: "aidc",
+    date: "2026-06-09",
+    type: "제정",
+    summary:
+      "AI 데이터센터 산업 진흥 특별법 제정 — 인허가등의 일괄처리 창구 일원화 및 기간 내 미통지 시 처리 완료 간주(제18조), 비수도권 전력계통영향평가 면제(제19조), 재생에너지 직접 공급 허용(제20조), 건축·산업입지·항만법 특례(제21조~제23조), 비수도권 AI 데이터센터 특구 지정 및 기반시설·부담금 감면 지원(제24조~제26조) 등 총 29개 조문 신설",
+    enforcementDate: "2027-03-10",
+  },
+];
 
 const amendmentsMap: Record<string, Amendment[]> = {
   "info-comm": infoCommAmendments,
@@ -311,6 +327,7 @@ const amendmentsMap: Record<string, Amendment[]> = {
   "data-industry": dataIndustryAmendments,
   "intelligent-info": intelligentInfoAmendments,
   quantum: quantumAmendments,
+  aidc: aidcAmendments,
 };
 
 export function getMockArticles(lawId: string): Article[] {
@@ -348,6 +365,8 @@ const dataIndustryThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/dat
 const intelligentInfoThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/intelligent-info.json") as ThreeTierRow[];
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const quantumThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/quantum.json") as ThreeTierRow[];
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const aidcThreeTier: ThreeTierRow[] = require("@/lib/data/three-tier/aidc.json") as ThreeTierRow[];
 
 const threeTierMap: Record<string, ThreeTierRow[]> = {
   "info-comm": infoCommThreeTier,
@@ -362,6 +381,7 @@ const threeTierMap: Record<string, ThreeTierRow[]> = {
   "data-industry": dataIndustryThreeTier,
   "intelligent-info": intelligentInfoThreeTier,
   quantum: quantumThreeTier,
+  aidc: aidcThreeTier,
 };
 
 export function getMockThreeTier(lawId: string): ThreeTierRow[] {
@@ -403,6 +423,8 @@ const dataIndustryCompare: Record<string, CompareEntry> = require("@/lib/data/co
 const intelligentInfoCompare: Record<string, CompareEntry> = require("@/lib/data/compare/intelligent-info.json") as Record<string, CompareEntry>;
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const quantumCompare: Record<string, CompareEntry> = require("@/lib/data/compare/quantum.json") as Record<string, CompareEntry>;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const aidcCompare: Record<string, CompareEntry> = require("@/lib/data/compare/aidc.json") as Record<string, CompareEntry>;
 
 const compareMap: Record<string, Record<string, CompareEntry>> = {
   "info-comm": infoCommCompare,
@@ -417,6 +439,7 @@ const compareMap: Record<string, Record<string, CompareEntry>> = {
   "data-industry": dataIndustryCompare,
   "intelligent-info": intelligentInfoCompare,
   quantum: quantumCompare,
+  aidc: aidcCompare,
 };
 
 export function getMockCompareData(lawId: string, amdId?: string): CompareEntry | null {

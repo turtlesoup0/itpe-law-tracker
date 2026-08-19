@@ -1,7 +1,7 @@
 #!/usr/bin/env npx tsx
 /**
  * 데이터 완전성 검증 스크립트
- * 10개 법률 JSON 파일의 조문·신구대조·3단비교 데이터를 검증하고 리포트를 출력한다.
+ * IT_LAWS 전체 법률의 JSON 파일의 조문·신구대조·3단비교 데이터를 검증하고 리포트를 출력한다.
  *
  * 사용법: npx tsx scripts/validate-data-completeness.ts
  */
@@ -10,9 +10,13 @@ import * as fs from "fs";
 import * as path from "path";
 
 const DATA_DIR = path.resolve(__dirname, "../src/lib/data");
+// law-constants.ts 의 IT_LAWS 와 동기화할 것.
+// 2026-08-19: quantum·intelligent-info 가 2026-04-08 추가 이후 이 목록에 반영되지
+// 않아 4개월간 검증에서 누락돼 있었다. 법령 추가 시 여기도 반드시 갱신한다.
 const LAWS = [
   "info-comm", "privacy", "sw-promotion", "ai-basic", "cloud",
   "e-gov", "nat-contract", "credit-info", "public-data", "data-industry",
+  "intelligent-info", "quantum", "aidc",
 ];
 
 // ① ~ ⑳

@@ -1,81 +1,20 @@
-"use client";
-
-import { useState, useCallback } from "react";
 import type { CompareOldNewItem } from "@/types/law";
-import { useLLMSettings } from "@/lib/llm-settings";
 
 /**
- * 캐싱된 요약 우선 표시, 없으면 실시간 LLM 버튼 fallback
+ * 신구대조 항목의 AI 요약.
+ *
+ * 요약은 서버 cron(/api/cron/generate-summaries)이 ANTHROPIC_API_KEY 로 미리
+ * 생성해 compare/*.json 의 item.summary 에 넣어 둔다. 예전에는 요약이 없는
+ * 항목에 한해 사용자가 설정에 등록한 개인 API 키로 실시간 호출하는 버튼을
+ * 뒀는데, cron 이 전체를 커버하게 되면서 남는 건 아직 cron 이 돌지 않은
+ * 소수 항목뿐이었다. 키를 입력받을 이유가 없어져 버튼과 설정 화면을 걷어냈다.
  */
 export function AISummarySection({ item }: { item: CompareOldNewItem }) {
-  if (item.summary) {
-    return (
-      <div className="mt-2 rounded border border-primary/25 bg-primary-soft p-2.5 text-xs leading-relaxed text-foreground">
-        <span className="font-semibold">📋 요약:</span> {item.summary}
-      </div>
-    );
-  }
-
-  return <LiveSummaryButton item={item} />;
-}
-
-/**
- * 실시간 LLM 요약 버튼 — 사용자의 LLM 설정(provider/apiKey/model)으로 호출
- */
-function LiveSummaryButton({ item }: { item: CompareOldNewItem }) {
-  const [llmSettings] = useLLMSettings();
-  const [summary, setSummary] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSummarize = useCallback(async () => {
-    if (!llmSettings?.apiKey) {
-      setError("설정 > API 키를 먼저 등록하세요");
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/llm/summarize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          oldText: item.oldText,
-          newText: item.newText,
-          articleNo: item.articleNo,
-          provider: llmSettings.provider,
-          apiKey: llmSettings.apiKey,
-          model: llmSettings.model,
-        }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setSummary(data.summary);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "요약 실패");
-    } finally {
-      setLoading(false);
-    }
-  }, [item, llmSettings]);
-
-  if (summary) {
-    return (
-      <div className="mt-2 rounded border border-primary/25 bg-primary-soft p-2.5 text-xs leading-relaxed text-foreground">
-        <span className="font-semibold">AI 요약:</span> {summary}
-      </div>
-    );
-  }
+  if (!item.summary) return null;
 
   return (
-    <div className="mt-1.5 flex items-center gap-2">
-      <button
-        onClick={handleSummarize}
-        disabled={loading}
-        className="text-xs text-primary underline underline-offset-2 hover:text-primary-hover disabled:opacity-50"
-      >
-        {loading ? "요약 중..." : "✨ AI 요약"}
-      </button>
-      {error && <span className="text-xs text-destructive">{error}</span>}
+    <div className="mt-2 rounded border border-primary/25 bg-primary-soft p-2.5 text-xs leading-relaxed text-foreground">
+      <span className="font-semibold">📋 요약:</span> {item.summary}
     </div>
   );
 }

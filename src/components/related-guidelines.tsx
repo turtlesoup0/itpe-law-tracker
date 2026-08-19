@@ -10,18 +10,39 @@ import {
   getGuidelineTrackerUrl,
 } from "@/lib/data/guideline-manifest-reader";
 
-// 가이드라인 트래커의 카테고리 → 한글 라벨 + 색상
-const GL_CATEGORY: Record<string, { label: string; color: string }> = {
-  info_security: { label: "정보보안", color: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300" },
-  privacy: { label: "개인정보", color: "bg-rose-100 text-rose-700 dark:bg-rose-900 dark:text-rose-300" },
-  software: { label: "SW", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300" },
-  data: { label: "데이터", color: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900 dark:text-cyan-300" },
-  cloud: { label: "클라우드", color: "bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300" },
-  ai: { label: "AI", color: "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300" },
-  e_gov: { label: "전자정부", color: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300" },
-  finance: { label: "금융", color: "bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300" },
-  other: { label: "기타", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400" },
+/**
+ * 가이드라인 트래커의 카테고리 → 한글 라벨 + 분야 토큰.
+ *
+ * 라벨과 색은 itpe-guideline-tracker-web 의 lib/categories.ts 와 맞춰 둔다.
+ * 여기서 링크를 따라가면 같은 분야가 같은 색으로 이어져야 하는데, 이전에는
+ * 이 파일이 Tailwind 원색을 따로 들고 있어서 info_security 가 여기서는 파랑,
+ * 저쪽에서는 보라로 보였다.
+ */
+const GL_CATEGORY: Record<string, { label: string; token: string }> = {
+  info_security: { label: "정보보안", token: "cat-infosec" },
+  privacy: { label: "개인정보", token: "cat-privacy" },
+  ai: { label: "AI", token: "cat-ai" },
+  e_gov: { label: "전자정부", token: "cat-egov" },
+  data: { label: "데이터", token: "cat-data" },
+  software: { label: "SW", token: "cat-software" },
+  cloud: { label: "클라우드", token: "cat-cloud" },
+  finance: { label: "금융", token: "cat-finance" },
+  other: { label: "기타", token: "cat-other" },
 };
+
+/** Tailwind JIT 가 템플릿 리터럴을 못 보므로 조합을 한 번 나열해 둔다. */
+const GL_CLASS_SAFELIST = [
+  "bg-cat-infosec/12 text-cat-infosec",
+  "bg-cat-privacy/12 text-cat-privacy",
+  "bg-cat-ai/12 text-cat-ai",
+  "bg-cat-egov/12 text-cat-egov",
+  "bg-cat-data/12 text-cat-data",
+  "bg-cat-software/12 text-cat-software",
+  "bg-cat-cloud/12 text-cat-cloud",
+  "bg-cat-finance/12 text-cat-finance",
+  "bg-cat-other/12 text-cat-other",
+];
+void GL_CLASS_SAFELIST;
 
 export function RelatedGuidelines({
   guidelines,
@@ -32,7 +53,7 @@ export function RelatedGuidelines({
 }) {
   if (guidelines.length === 0) {
     return (
-      <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+      <p className="py-4 text-center text-sm text-muted-foreground">
         매칭되는 실무 가이드라인이 없습니다.
       </p>
     );
@@ -48,23 +69,17 @@ export function RelatedGuidelines({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
           관련 실무 가이드라인 {guidelines.length}건
-          <span className="text-xs ml-2 text-slate-400 dark:text-slate-500">
-            가이드라인 트래커 연동
-          </span>
+          <span className="ml-2 text-xs text-faint">가이드라인 트래커 연동</span>
         </p>
-        {stale && (
-          <span className="text-xs text-amber-600 dark:text-amber-400">
-            데이터 갱신 필요
-          </span>
-        )}
+        {stale && <span className="text-xs text-warning">데이터 갱신 필요</span>}
       </div>
 
       {Array.from(grouped.entries()).map(([ruleTitle, items]) => (
         <div key={ruleTitle} className="space-y-2">
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 border-l-2 border-slate-300 dark:border-slate-600 pl-2">
+          <p className="border-l-2 pl-2 text-xs font-medium text-muted-foreground">
             {ruleTitle}
           </p>
           {items.map((g) => {
@@ -77,21 +92,23 @@ export function RelatedGuidelines({
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-start gap-3 p-3 rounded-lg border border-dashed border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
+                className="group flex items-start gap-3 rounded-lg border border-dashed p-3 transition-colors hover:border-border-strong hover:bg-muted"
               >
-                <span className={`shrink-0 text-[11px] px-2 py-0.5 rounded-full ${cat.color}`}>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] bg-${cat.token}/12 text-${cat.token}`}
+                >
                   {cat.label}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <p className="text-sm font-medium transition-colors group-hover:text-primary">
                     {g.title}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  <p className="mt-0.5 text-xs text-faint">
                     {g.agencyName}
                     {g.latestPublishedDate && ` · ${g.latestPublishedDate}`}
                   </p>
                 </div>
-                <span className="shrink-0 text-xs text-slate-400 group-hover:text-blue-500 transition-colors mt-1">
+                <span className="mt-1 shrink-0 text-xs text-faint transition-colors group-hover:text-primary">
                   →
                 </span>
               </a>

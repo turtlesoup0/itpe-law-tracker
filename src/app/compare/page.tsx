@@ -53,8 +53,8 @@ function CompareContent() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">신구법 비교</h1>
-        <p className="text-slate-600 dark:text-slate-400">개정 전후 법령 조문을 비교합니다.</p>
+        <h1 className="text-[23px] font-semibold tracking-tight">신구법 비교</h1>
+        <p className="mt-1.5 text-sm text-muted-foreground">개정 전후 법령 조문을 비교합니다.</p>
       </div>
 
       {/* 법령 선택 */}
@@ -120,7 +120,7 @@ function CompareContent() {
             <div className="flex flex-wrap gap-2 mb-3">
               <span className="text-sm font-medium text-foreground">변경 유형:</span>
               {[...new Set(Object.values(changeData.changeMeta).flatMap((m) => m.tags))].map((tag) => (
-                <span key={tag} className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">
+                <span key={tag} className="rounded-full bg-primary-soft px-2 py-1 text-xs text-primary">
                   {tag}
                 </span>
               ))}
@@ -128,7 +128,7 @@ function CompareContent() {
             <div className="flex flex-wrap gap-2">
               <span className="text-sm font-medium text-foreground">영향 대상:</span>
               {[...new Set(Object.values(changeData.changeMeta).flatMap((m) => m.affectedParties))].map((party) => (
-                <span key={party} className="text-xs px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">
+                <span key={party} className="rounded-full bg-cat-contract/12 px-2 py-1 text-xs text-cat-contract">
                   {party}
                 </span>
               ))}
@@ -156,7 +156,7 @@ function CompareContent() {
       {/* 데이터 없음 */}
       {selectedLawId && !changeData && (
         <Card>
-          <CardContent className="py-12 text-center text-slate-500 dark:text-slate-400">
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
             이 법령의 신구대조 데이터가 아직 준비되지 않았습니다.
           </CardContent>
         </Card>
@@ -164,7 +164,7 @@ function CompareContent() {
 
       {law && changeData && changeData.items.length === 0 && (
         <Card>
-          <CardContent className="py-12 text-center text-slate-500 dark:text-slate-400">
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
             {selectedAmendment?.summary || "이 개정의 신구대조 항목이 없습니다."}
           </CardContent>
         </Card>
@@ -175,7 +175,7 @@ function CompareContent() {
 
 export default function ComparePage() {
   return (
-    <Suspense fallback={<div className="py-12 text-center text-slate-500 dark:text-slate-400">Loading...</div>}>
+    <Suspense fallback={<div className="py-12 text-center text-sm text-muted-foreground">Loading...</div>}>
       <CompareContent />
     </Suspense>
   );

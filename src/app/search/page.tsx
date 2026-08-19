@@ -45,10 +45,10 @@ export default function SearchPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+        <h1 className="text-[23px] font-semibold tracking-tight">
           법령 조문 검색
         </h1>
-        <p className="text-slate-600 dark:text-slate-400">
+        <p className="mt-1.5 text-sm text-muted-foreground">
           10개 IT 법률의 전체 조문을 검색합니다. (예: &quot;클라우드 보안
           인증&quot;, &quot;개인정보 처리&quot;)
         </p>
@@ -69,12 +69,12 @@ export default function SearchPage() {
 
       {searched && (
         <div className="space-y-3">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-faint">
             {results.length}개 결과
             {results.length === 50 && " (상위 50건)"}
           </p>
           {results.length === 0 && (
-            <p className="text-slate-500 dark:text-slate-400 py-8 text-center">
+            <p className="py-8 text-center text-sm text-muted-foreground">
               검색 결과가 없습니다.
             </p>
           )}
@@ -82,26 +82,26 @@ export default function SearchPage() {
             const parts = highlightQuery(result.content);
             return (
               <Link key={i} href={`/laws/${result.lawId}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer dark:bg-slate-800 dark:border-slate-700">
+                <Card className="cursor-pointer transition-colors hover:ring-foreground/25">
                   <CardContent className="py-4">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      <span className="font-semibold text-foreground">
                         {result.lawName}
                       </span>
-                      <span className="text-sm text-blue-600 dark:text-blue-400">
+                      <span className="text-sm text-primary">
                         {result.jo} {result.title}
                       </span>
-                      <span className="ml-auto text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
+                      <span className="ml-auto rounded-full bg-primary-soft px-2 py-0.5 text-xs text-primary">
                         {result.relevance}%
                       </span>
                     </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
                       {Array.isArray(parts)
                         ? parts.map((part, j) =>
                             j % 2 === 1 ? (
                               <mark
                                 key={j}
-                                className="bg-yellow-200 dark:bg-yellow-800 text-slate-900 dark:text-slate-100 rounded px-0.5"
+                                className="rounded bg-warning/25 px-0.5 text-foreground"
                               >
                                 {part}
                               </mark>

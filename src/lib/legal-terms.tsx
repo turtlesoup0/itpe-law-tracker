@@ -67,11 +67,11 @@ export function highlightTerms(text: string): React.ReactNode {
           tabIndex={0}
         >
           {earliestTerm}
-          <span className="text-[10px] text-blue-500 dark:text-blue-400 no-underline ml-0.5">
+          <span className="ml-0.5 text-[10px] text-primary no-underline">
             ({shortExplanation})
           </span>
         </span>
-        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-3 py-1.5 bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+        <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-3 py-1.5 bg-foreground text-background text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
           <span className="font-semibold">{earliestTerm}</span>
           <span className="mx-1">—</span>
           {shortExplanation}

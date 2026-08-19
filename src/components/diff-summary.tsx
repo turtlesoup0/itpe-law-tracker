@@ -10,7 +10,7 @@ import { useLLMSettings } from "@/lib/llm-settings";
 export function AISummarySection({ item }: { item: CompareOldNewItem }) {
   if (item.summary) {
     return (
-      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
+      <div className="mt-2 rounded border border-primary/25 bg-primary-soft p-2.5 text-xs leading-relaxed text-foreground">
         <span className="font-semibold">📋 요약:</span> {item.summary}
       </div>
     );
@@ -60,7 +60,7 @@ function LiveSummaryButton({ item }: { item: CompareOldNewItem }) {
 
   if (summary) {
     return (
-      <div className="mt-2 p-2.5 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded text-xs text-purple-800 dark:text-purple-200 leading-relaxed">
+      <div className="mt-2 rounded border border-primary/25 bg-primary-soft p-2.5 text-xs leading-relaxed text-foreground">
         <span className="font-semibold">AI 요약:</span> {summary}
       </div>
     );
@@ -71,11 +71,11 @@ function LiveSummaryButton({ item }: { item: CompareOldNewItem }) {
       <button
         onClick={handleSummarize}
         disabled={loading}
-        className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 underline underline-offset-2 disabled:opacity-50"
+        className="text-xs text-primary underline underline-offset-2 hover:text-primary-hover disabled:opacity-50"
       >
         {loading ? "요약 중..." : "✨ AI 요약"}
       </button>
-      {error && <span className="text-xs text-red-500">{error}</span>}
+      {error && <span className="text-xs text-destructive">{error}</span>}
     </div>
   );
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { ThemeToggle } from "@/components/theme-toggle";
 
-const navItems = [
+import { MobileNav } from "@/app/mobile-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
+
+const NAV_ITEMS = [
   { href: "/", label: "대시보드" },
   { href: "/laws", label: "법령 목록" },
   { href: "/search", label: "AI 검색" },
@@ -15,51 +16,46 @@ const navItems = [
 
 export function NavBar() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-14 items-center px-4">
-        <Link href="/" className="mr-8 flex items-center space-x-2">
-          <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+    <header className="sticky top-0 z-50 border-b bg-card">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:gap-7">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+          {/* 법전(겹친 문서) 마크 — 가이드라인 트래커의 레이어 마크와 같은 계열 */}
+          <span className="grid size-[22px] place-items-center rounded-md bg-primary text-primary-foreground">
+            <svg
+              className="size-[13px]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2.1}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 4.5h6a2.5 2.5 0 0 1 2 1 2.5 2.5 0 0 1 2-1h6v13h-6a2.5 2.5 0 0 0-2 1 2.5 2.5 0 0 0-2-1H4v-13z" />
+              <path d="M12 5.5v13" />
+            </svg>
+          </span>
+          <span className="truncate text-[14.5px] font-semibold tracking-tight">
             IT 법령 트래커
           </span>
         </Link>
 
-        {/* Hamburger button — visible only on small screens */}
-        <button
-          type="button"
-          className="md:hidden p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label={menuOpen ? "메뉴 닫기" : "메뉴 열기"}
-          aria-expanded={menuOpen}
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            {menuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-
-        {/* Desktop nav — hidden on small screens */}
-        <nav className="hidden md:flex items-center space-x-1">
-          {navItems.map((item) => (
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-0.5 sm:flex">
+          {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
               className={cn(
-                "px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                pathname === item.href
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                "rounded-md px-2.5 py-1.5 text-[13px] whitespace-nowrap transition-colors",
+                isActive(item.href)
+                  ? "bg-primary-soft font-medium text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               {item.label}
@@ -67,43 +63,37 @@ export function NavBar() {
           ))}
         </nav>
 
-        {/* Settings gear + theme toggle — always visible */}
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1.5">
           <Link
             href="/settings"
+            aria-label="설정"
+            aria-current={isActive("/settings") ? "page" : undefined}
             className={cn(
-              "p-2 rounded-md transition-colors text-sm",
-              pathname === "/settings"
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+              "grid size-8 place-items-center rounded-lg border transition-colors",
+              isActive("/settings")
+                ? "border-primary/30 bg-primary-soft text-primary"
+                : "bg-card text-muted-foreground hover:border-border-strong hover:bg-muted hover:text-foreground",
             )}
           >
-            ⚙
+            <svg
+              className="size-[15px]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
           </Link>
           <ThemeToggle />
+          <div className="sm:hidden">
+            <MobileNav items={NAV_ITEMS} />
+          </div>
         </div>
       </div>
-
-      {/* Mobile dropdown menu */}
-      {menuOpen && (
-        <nav className="md:hidden border-t border-border bg-background px-4 pb-3 pt-2 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMenuOpen(false)}
-              className={cn(
-                "block px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                pathname === item.href
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      )}
     </header>
   );
 }

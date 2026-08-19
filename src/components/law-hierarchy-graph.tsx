@@ -20,24 +20,32 @@ import type { HierarchyNode } from "@/types/law";
 // 색상 맵
 // ---------------------------------------------------------------------------
 
-const lightColors: Record<string, { bg: string; border: string; text: string }> = {
-  "법률": { bg: "#EFF6FF", border: "#2563EB", text: "#1E40AF" },
-  "시행령": { bg: "#ECFDF5", border: "#059669", text: "#065F46" },
-  "시행규칙": { bg: "#FFFBEB", border: "#D97706", text: "#92400E" },
-  "고시": { bg: "#F5F3FF", border: "#9333EA", text: "#6B21A8" },
-  "연관법": { bg: "#EEF2FF", border: "#6366F1", text: "#4338CA" },
-  "기관": { bg: "#FFF1F2", border: "#E11D48", text: "#9F1239" },
+/**
+ * 노드 색은 globals.css 의 분야 토큰을 그대로 참조한다.
+ * 라이트/다크용 hex 표를 두 벌 들고 isDark 로 갈아끼우던 방식이었는데,
+ * 팔레트를 바꿀 때마다 이 파일이 따로 놀았다. CSS 변수는 브라우저가
+ * 테마별로 알아서 풀어주므로 표가 한 벌이면 된다.
+ */
+const NODE_TOKEN: Record<string, string> = {
+  "법률": "--cat-infosec",
+  "시행령": "--cat-software",
+  "시행규칙": "--cat-finance",
+  "고시": "--cat-ai",
+  "연관법": "--cat-cloud",
+  "기관": "--cat-privacy",
 };
 
-const darkColors: Record<string, { bg: string; border: string; text: string }> = {
-  "법률": { bg: "#1E3A5F", border: "#60A5FA", text: "#BFDBFE" },
-  "시행령": { bg: "#1A3A2A", border: "#34D399", text: "#A7F3D0" },
-  "시행규칙": { bg: "#3D2E0F", border: "#FBBF24", text: "#FDE68A" },
-  "고시": { bg: "#2E1A47", border: "#C084FC", text: "#E9D5FF" },
-  "연관법": { bg: "#1E1B4B", border: "#818CF8", text: "#C7D2FE" },
-  "기관": { bg: "#4C0519", border: "#FB7185", text: "#FECDD3" },
-};
+type NodeColors = { bg: string; border: string; text: string };
 
+function nodeColors(type: string): NodeColors {
+  const v = `var(${NODE_TOKEN[type] ?? NODE_TOKEN["법률"]})`;
+  return {
+    // 카드 위에 얹히므로 --card 를 바탕으로 섞는다 (다크에서도 그대로 성립)
+    bg: `color-mix(in oklab, ${v} 12%, var(--card))`,
+    border: v,
+    text: v,
+  };
+}
 // ---------------------------------------------------------------------------
 // 공통 상수 & 헬퍼
 // ---------------------------------------------------------------------------
@@ -71,9 +79,8 @@ function pushNode(
   node: HierarchyNode,
   x: number,
   y: number,
-  colorMap: typeof lightColors,
 ) {
-  const colors = colorMap[node.type] || colorMap["법률"];
+  const colors = nodeColors(node.type);
   nodes.push({
     id: node.id,
     position: { x, y },
@@ -86,7 +93,6 @@ function pushEdge(
   edges: Edge[],
   sourceId: string,
   target: HierarchyNode,
-  isDark: boolean,
 ) {
   const isIndirect = target.type === "연관법" || target.type === "고시";
   edges.push({
@@ -95,7 +101,7 @@ function pushEdge(
     target: target.id,
     type: "smoothstep",
     style: {
-      stroke: isDark ? "#64748B" : "#94A3B8",
+      stroke: "var(--border-strong)",
       strokeWidth: 2,
       strokeDasharray: isIndirect ? "6 3" : undefined,
     },
@@ -103,11 +109,11 @@ function pushEdge(
     label: target.relation || undefined,
     labelStyle: {
       fontSize: 9,
-      fill: isDark ? "#94A3B8" : "#64748B",
+      fill: "var(--muted-foreground)",
       fontWeight: 500,
     },
     labelBgStyle: {
-      fill: isDark ? "#1E293B" : "#FFFFFF",
+      fill: "var(--card)",
       fillOpacity: 0.85,
     },
     labelBgPadding: [3, 1] as [number, number],
@@ -128,8 +134,6 @@ function pushEdge(
 
 function layoutLawHierarchy(
   hierarchy: HierarchyNode[],
-  colorMap: typeof lightColors,
-  isDark: boolean,
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -160,16 +164,16 @@ function layoutLawHierarchy(
     let y = 0;
     for (let i = 0; i < spine.length; i++) {
       const node = spine[i];
-      pushNode(nodes, node, centerX, y, colorMap);
-      if (i > 0) pushEdge(edges, spine[i - 1].id, node, isDark);
+      pushNode(nodes, node, centerX, y);
+      if (i > 0) pushEdge(edges, spine[i - 1].id, node);
 
       // 좌측: 연관법
       const lefts = leftMap.get(node.id) ?? [];
       const leftBlockH = lefts.length * (NODE_H + BRANCH_V) - BRANCH_V;
       let leftY = y + NODE_H / 2 - leftBlockH / 2; // 스파인 노드 중앙 정렬
       for (const left of lefts) {
-        pushNode(nodes, left, centerX - NODE_W - BRANCH_H, leftY, colorMap);
-        pushEdge(edges, node.id, left, isDark);
+        pushNode(nodes, left, centerX - NODE_W - BRANCH_H, leftY);
+        pushEdge(edges, node.id, left);
         leftY += NODE_H + BRANCH_V;
       }
 
@@ -178,8 +182,8 @@ function layoutLawHierarchy(
       const rightBlockH = rights.length * (NODE_H + BRANCH_V) - BRANCH_V;
       let rightY = y + NODE_H / 2 - rightBlockH / 2;
       for (const right of rights) {
-        pushNode(nodes, right, centerX + NODE_W + BRANCH_H, rightY, colorMap);
-        pushEdge(edges, node.id, right, isDark);
+        pushNode(nodes, right, centerX + NODE_W + BRANCH_H, rightY);
+        pushEdge(edges, node.id, right);
         rightY += NODE_H + BRANCH_V;
       }
 
@@ -204,8 +208,6 @@ function layoutLawHierarchy(
 
 function layoutAgencyTree(
   hierarchy: HierarchyNode[],
-  colorMap: typeof lightColors,
-  isDark: boolean,
 ): { nodes: Node[]; edges: Edge[] } {
   const nodes: Node[] = [];
   const edges: Edge[] = [];
@@ -229,8 +231,8 @@ function layoutAgencyTree(
     const nodeX = xOffset + subtreeW / 2 - NODE_W / 2;
     const nodeY = depth * (NODE_H + V_GAP);
 
-    pushNode(nodes, node, nodeX, nodeY, colorMap);
-    if (parentId) pushEdge(edges, parentId, node, isDark);
+    pushNode(nodes, node, nodeX, nodeY);
+    if (parentId) pushEdge(edges, parentId, node);
 
     let childX = xOffset;
     for (const child of node.children) {
@@ -258,14 +260,12 @@ function layoutAgencyTree(
 
 function computeLayout(
   hierarchy: HierarchyNode[],
-  colorMap: typeof lightColors,
-  isDark: boolean,
 ): { nodes: Node[]; edges: Edge[] } {
   // 기관 노드만 있으면 트리 레이아웃, 아니면 법령 스파인 레이아웃
   const allAgency = hierarchy.length > 0 && hierarchy.every((h) => h.type === "기관");
   return allAgency
-    ? layoutAgencyTree(hierarchy, colorMap, isDark)
-    : layoutLawHierarchy(hierarchy, colorMap, isDark);
+    ? layoutAgencyTree(hierarchy)
+    : layoutLawHierarchy(hierarchy);
 }
 
 // ---------------------------------------------------------------------------
@@ -296,24 +296,9 @@ export function LawHierarchyGraph({
 }: {
   hierarchy: HierarchyNode[];
 }) {
-  const [isDark, setIsDark] = useState(false);
-  useEffect(() => {
-    const check = () =>
-      setIsDark(document.documentElement.classList.contains("dark"));
-    check();
-    const observer = new MutationObserver(check);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => observer.disconnect();
-  }, []);
-
-  const colorMap = isDark ? darkColors : lightColors;
-
   const { nodes, edges } = useMemo(
-    () => computeLayout(hierarchy, colorMap, isDark),
-    [hierarchy, colorMap, isDark],
+    () => computeLayout(hierarchy),
+    [hierarchy],
   );
 
   const [localNodes, setLocalNodes] = useState(nodes);

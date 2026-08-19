@@ -41,10 +41,10 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
 
       {/* 제·개정이유 box */}
       {amendmentReason && (
-        <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">개정이유 및 주요내용</h4>
-          <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed whitespace-pre-line">{amendmentReason}</p>
-          <p className="text-xs text-blue-500 dark:text-blue-400 mt-2">출처: 법제처</p>
+        <div className="rounded-lg border border-primary/25 bg-primary-soft p-4">
+          <h4 className="mb-2 text-sm font-semibold text-foreground">개정이유 및 주요내용</h4>
+          <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">{amendmentReason}</p>
+          <p className="mt-2 text-xs text-primary">출처: 법제처</p>
         </div>
       )}
 
@@ -72,8 +72,8 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
         <div className="border rounded-lg overflow-x-auto">
           <div className="grid grid-cols-[auto_1fr_1fr] min-w-[600px] bg-muted border-b">
             <div className="px-4 py-2 font-medium text-sm text-foreground border-r w-28">조문</div>
-            <div className="px-4 py-2 font-medium text-sm text-red-700 dark:text-red-400 border-r">개정 전</div>
-            <div className="px-4 py-2 font-medium text-sm text-green-700 dark:text-green-400">개정 후</div>
+            <div className="border-r px-4 py-2 text-sm font-medium text-destructive">개정 전</div>
+            <div className="px-4 py-2 text-sm font-medium text-success">개정 후</div>
           </div>
           {changes.map((item, i) => {
             const colors = getChangeTypeColor(item.changeType);
@@ -116,14 +116,14 @@ export function DiffViewer({ changes, lawName, amendmentDate, enforcementDate, a
                 </div>
                 {item.oldText && (
                   <div className="text-sm mb-1">
-                    <span className="text-red-600 font-mono mr-1">-</span>
-                    <span className="bg-red-100 dark:bg-red-900/30 text-foreground" dangerouslySetInnerHTML={{ __html: diff.oldHtml }} />
+                    <span className="mr-1 font-mono text-destructive">-</span>
+                    <span className="bg-destructive/12 text-foreground" dangerouslySetInnerHTML={{ __html: diff.oldHtml }} />
                   </div>
                 )}
                 {item.newText && (
                   <div className="text-sm">
-                    <span className="text-green-600 font-mono mr-1">+</span>
-                    <span className="bg-green-100 dark:bg-green-900/30 text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml }} />
+                    <span className="mr-1 font-mono text-success">+</span>
+                    <span className="bg-success/12 text-foreground" dangerouslySetInnerHTML={{ __html: diff.newHtml }} />
                   </div>
                 )}
                 <AISummarySection item={item} />

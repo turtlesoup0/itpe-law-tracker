@@ -9,43 +9,43 @@ export function AdminRuleList({ lawId, lawShortName }: { lawId: string; lawShort
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   if (rules.length === 0) {
-    return <p className="text-slate-500 dark:text-slate-400 text-center py-4">이 법령의 관련 고시/행정규칙이 아직 등록되지 않았습니다.</p>;
+    return <p className="py-4 text-center text-sm text-muted-foreground">이 법령의 관련 고시/행정규칙이 아직 등록되지 않았습니다.</p>;
   }
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{lawShortName} 관련 고시 · 행정규칙 {rules.length}건</p>
+      <p className="mb-4 text-sm text-muted-foreground">{lawShortName} 관련 고시 · 행정규칙 {rules.length}건</p>
       {rules.map((rule) => {
         const isExpanded = expandedId === rule.id;
         return (
           <div key={rule.id} className="border rounded-lg overflow-hidden">
             <button
-              className="w-full text-left p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              className="w-full p-4 text-left transition-colors hover:bg-muted"
               onClick={() => setExpandedId(isExpanded ? null : rule.id)}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className={`text-xs px-2 py-0.5 rounded-full ${ADMIN_RULE_TYPE_COLORS[rule.type] ?? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}>
+                <span className={`text-xs px-2 py-0.5 rounded-full ${ADMIN_RULE_TYPE_COLORS[rule.type] ?? "bg-muted text-muted-foreground"}`}>
                   {rule.type}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">{rule.department}</span>
+                <span className="text-xs text-muted-foreground">{rule.department}</span>
                 {rule.proclamationDate && (
-                  <span className="text-xs text-slate-400 dark:text-slate-500">{rule.proclamationDate}</span>
+                  <span className="text-xs text-faint">{rule.proclamationDate}</span>
                 )}
-                <span className="ml-auto text-xs text-slate-400">{isExpanded ? "▲" : "▼"}</span>
+                <span className="ml-auto text-xs text-faint">{isExpanded ? "▲" : "▼"}</span>
               </div>
-              <p className="font-medium text-sm text-slate-900 dark:text-slate-100">{rule.name}</p>
-              {rule.summary && <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{rule.summary}</p>}
+              <p className="text-sm font-medium text-foreground">{rule.name}</p>
+              {rule.summary && <p className="mt-1 text-xs text-muted-foreground">{rule.summary}</p>}
             </button>
 
             {isExpanded && (
-              <div className="border-t px-4 pb-4 pt-3 bg-slate-50/50 dark:bg-slate-800/50">
+              <div className="border-t bg-muted/50 px-4 pt-3 pb-4">
                 {rule.articles && rule.articles.length > 0 && (
                   <div className="space-y-3 mb-3">
-                    <p className="text-xs font-medium text-slate-600 dark:text-slate-300">핵심 조문 요약</p>
+                    <p className="text-xs font-medium text-muted-foreground">핵심 조문 요약</p>
                     {rule.articles.map((art) => (
-                      <div key={art.jo} className="pl-3 border-l-2 border-blue-300 dark:border-blue-700">
-                        <p className="text-xs font-medium text-blue-700 dark:text-blue-300">{art.jo} {art.title}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">{art.content}</p>
+                      <div key={art.jo} className="border-l-2 border-primary/35 pl-3">
+                        <p className="text-xs font-medium text-primary">{art.jo} {art.title}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{art.content}</p>
                       </div>
                     ))}
                   </div>
@@ -55,7 +55,7 @@ export function AdminRuleList({ lawId, lawShortName }: { lawId: string; lawShort
                     href={rule.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
                   >
                     법제처에서 전문 보기 →
                   </a>

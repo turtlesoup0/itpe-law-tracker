@@ -26,7 +26,7 @@ function renderAmendmentItem(amd: Amendment, lawId: string) {
       {/* 타임라인 점 */}
       <div className={`absolute left-2.5 w-3 h-3 rounded-full ${getAmendmentTypeColor(amd.type)} ring-4 ring-background`} />
 
-      <div className="bg-card border rounded-lg p-4 hover:shadow-md transition-shadow">
+      <div className="rounded-lg border bg-card p-4 transition-colors hover:border-border-strong">
         <div className="flex items-center gap-2 mb-2 flex-wrap">
           <span className="text-sm font-medium text-foreground">{amd.date}</span>
           <span className={`text-xs px-2 py-0.5 rounded-full ${status.bg} ${status.text}`}>
@@ -36,10 +36,10 @@ function renderAmendmentItem(amd: Amendment, lawId: string) {
             {amd.type}
           </span>
           {importance.level !== "low" && (
-            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
               importance.level === "high"
-                ? "bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300"
-                : "bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300"
+                ? "bg-destructive/12 text-destructive"
+                : "bg-warning/15 text-warning"
             }`}>
               {importance.label}
             </span>
@@ -50,7 +50,7 @@ function renderAmendmentItem(amd: Amendment, lawId: string) {
           <span>시행일: {amd.enforcementDate}</span>
           <Link
             href={`/compare?lawId=${lawId}&amdId=${amd.id}`}
-            className="text-blue-600 hover:underline"
+            className="text-primary hover:underline"
           >
             신구대조 보기
           </Link>
@@ -80,8 +80,8 @@ export function AmendmentTimeline({ amendments, lawId }: { amendments: Amendment
         {upcoming.length > 0 && (
           <>
             <div className="relative pl-12">
-              <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <span className="inline-block size-2 animate-pulse rounded-full bg-primary" />
                 시행 예정
               </div>
             </div>
@@ -98,8 +98,8 @@ export function AmendmentTimeline({ amendments, lawId }: { amendments: Amendment
         {past.length > 0 && (
           <>
             <div className="relative pl-12">
-              <div className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+              <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <span className="inline-block size-2 rounded-full bg-success" />
                 시행 완료
               </div>
             </div>

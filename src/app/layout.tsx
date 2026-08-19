@@ -24,13 +24,22 @@ const themeScript = `
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning className="h-full">
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} flex min-h-full flex-col antialiased bg-background text-foreground`}>
         <NavBar />
-        <main className="container mx-auto px-4 py-8">{children}</main>
+
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:py-7">
+          {children}
+        </main>
+
+        <footer className="border-t py-4">
+          <div className="mx-auto max-w-7xl px-4 text-center text-xs text-faint">
+            IT 법령 트래커 &mdash; 법률 &rarr; 시행령 &rarr; 고시 위임구조 · 개정 추적
+          </div>
+        </footer>
       </body>
     </html>
   );

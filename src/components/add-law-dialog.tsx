@@ -110,7 +110,7 @@ export function AddLawDialog({ onAdd }: { onAdd: (law: Law) => void }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="px-4 py-2 text-sm font-medium rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
       >
         + 법령 추가
       </button>
@@ -222,7 +222,7 @@ export function AddLawDialog({ onAdd }: { onAdd: (law: Law) => void }) {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-sm font-medium rounded-md bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors"
+                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
                 >
                   추가
                 </button>

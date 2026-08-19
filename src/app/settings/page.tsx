@@ -61,7 +61,7 @@ export default function SettingsPage() {
       <div className="mb-6 flex items-center gap-2 rounded-lg border border-border bg-card p-4">
         <span
           className={`inline-block h-3 w-3 rounded-full ${
-            hasSaved ? "bg-green-500" : "bg-red-500"
+            hasSaved ? "bg-success" : "bg-destructive"
           }`}
         />
         <span className="text-sm text-foreground">
@@ -81,7 +81,7 @@ export default function SettingsPage() {
                 key={p.id}
                 className={`flex cursor-pointer items-center gap-2 rounded-lg border px-4 py-3 transition-colors ${
                   provider === p.id
-                    ? "border-blue-500 bg-blue-500/10 text-foreground"
+                    ? "border-primary bg-primary-soft text-foreground"
                     : "border-border bg-muted text-muted-foreground hover:border-foreground/30"
                 }`}
               >
@@ -91,7 +91,7 @@ export default function SettingsPage() {
                   value={p.id}
                   checked={provider === p.id}
                   onChange={() => handleProviderChange(p.id)}
-                  className="accent-blue-500"
+                  className="accent-primary"
                 />
                 <span className="text-sm font-medium">{p.name}</span>
               </label>
@@ -117,7 +117,7 @@ export default function SettingsPage() {
                 setTestResult(null);
               }}
               placeholder="sk-..."
-              className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 pr-16 text-sm text-foreground placeholder:text-muted-foreground focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 pr-16 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
             />
             <button
               type="button"
@@ -141,7 +141,7 @@ export default function SettingsPage() {
             id="model"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-sm text-foreground focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-lg border border-border bg-muted px-4 py-2.5 text-sm text-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none"
           >
             {currentProvider.models.map((m) => (
               <option key={m} value={m}>
@@ -156,8 +156,8 @@ export default function SettingsPage() {
           <div
             className={`rounded-lg px-4 py-3 text-sm ${
               testResult === "success"
-                ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                : "bg-red-500/10 text-red-600 dark:text-red-400"
+                ? "bg-success/12 text-success"
+                : "bg-destructive/12 text-destructive"
             }`}
           >
             {testResult === "success"
@@ -168,7 +168,7 @@ export default function SettingsPage() {
 
         {/* Saved confirmation */}
         {justSaved && (
-          <div className="rounded-lg bg-blue-500/10 px-4 py-3 text-sm text-blue-600 dark:text-blue-400">
+          <div className="rounded-lg bg-primary-soft px-4 py-3 text-sm text-primary">
             ✓ 설정이 저장되었습니다.
           </div>
         )}
@@ -178,7 +178,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
           >
             저장
           </button>

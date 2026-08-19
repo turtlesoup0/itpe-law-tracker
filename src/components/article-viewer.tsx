@@ -140,7 +140,7 @@ export function ArticleViewer({
               value={tocFilter}
               onChange={(e) => setTocFilter(e.target.value)}
               placeholder="조문 검색…"
-              className="w-full px-2 py-1 text-xs border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="w-full rounded-md border bg-background px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring focus:outline-none"
             />
             {tocFilter.trim() && (
               <p className="text-[10px] text-muted-foreground mt-1">
@@ -157,7 +157,7 @@ export function ArticleViewer({
               onClick={() => scrollToArticle(article.jo)}
               className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors ${
                 activeJo === article.jo
-                  ? "bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-bold"
+                  ? "bg-primary-soft text-primary font-bold"
                   : "text-muted-foreground hover:bg-muted font-normal"
               }`}
             >
@@ -175,7 +175,7 @@ export function ArticleViewer({
             data-jo={article.jo}
             ref={(el) => { if (el) articleRefs.current.set(article.jo, el); }}
           >
-            <Card className={activeJo === article.jo ? "ring-2 ring-blue-400/50" : ""}>
+            <Card className={activeJo === article.jo ? "ring-2 ring-ring/50" : ""}>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">
                   {article.jo} {article.title}
@@ -204,11 +204,11 @@ export function ArticleViewer({
                 </div>
                 {/* 조문 해설 토글 */}
                 {showCommentary && article.commentary && (
-                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                  <div className="mt-4 rounded-lg border border-primary/25 bg-primary-soft p-4">
+                    <p className="text-sm leading-relaxed text-foreground">
                       {article.commentary}
                     </p>
-                    <p className="text-xs text-blue-500 mt-2">* 조문 해설 (참고용)</p>
+                    <p className="mt-2 text-xs text-primary">* 조문 해설 (참고용)</p>
                   </div>
                 )}
               </CardContent>
@@ -229,7 +229,7 @@ export function ArticleViewer({
       <div className="absolute bottom-3 right-4 z-10">
         <button
           onClick={() => setShowCommentary(!showCommentary)}
-          className="flex items-center gap-2 px-4 py-2 rounded-full shadow-lg border bg-background text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors"
+          className="flex items-center gap-2 rounded-full border bg-card px-4 py-2 text-sm font-medium text-primary shadow-lg transition-colors hover:bg-primary-soft"
           title={showCommentary ? "해설 접기" : "해설 보기"}
         >
           <span>{showCommentary ? "💡" : "💬"}</span>
@@ -249,7 +249,7 @@ function HangItem({ hang }: { hang: ArticleHang }) {
   const num = parseHangNumber(hang.number);
 
   return (
-    <div className="pl-4 border-l-2 border-blue-200 dark:border-blue-800">
+    <div className="border-l-2 border-primary/25 pl-4">
       <div className="text-sm text-foreground/80 dark:text-foreground/90">
         <span className="font-medium text-foreground">
           {circledNumber(num)}
@@ -285,7 +285,7 @@ function HoItem({ ho }: { ho: ArticleHo }) {
   const label = isNumeric ? `${ho.number}.` : `${hoLabel(hoNum)}.`;
 
   return (
-    <li className="text-sm text-foreground/75 dark:text-foreground/85 pl-3 border-l border-slate-300 dark:border-slate-600">
+    <li className="border-l border-border-strong pl-3 text-sm text-foreground/85">
       <span className="font-medium text-foreground">{label}</span>{" "}
       {highlightTerms(ho.content)}
       {hasMok && (
@@ -304,7 +304,7 @@ function HoItem({ ho }: { ho: ArticleHo }) {
 // ---------------------------------------------------------------------------
 function MokItem({ mok }: { mok: { number: string; content: string } }) {
   return (
-    <li className="text-sm text-foreground/65 dark:text-foreground/75 pl-3 border-l border-dashed border-slate-300 dark:border-slate-600">
+    <li className="border-l border-dashed border-border-strong pl-3 text-sm text-muted-foreground">
       <span className="font-medium text-foreground/80">{mok.number}.</span>{" "}
       {highlightTerms(mok.content)}
     </li>

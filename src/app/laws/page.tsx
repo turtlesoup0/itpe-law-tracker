@@ -2,14 +2,14 @@
 
 import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
-import { IT_LAWS, type LawCategory, CATEGORIES } from "@/lib/laws-data";
+import { IT_LAWS, type LawCategory } from "@/lib/laws-data";
 import { LawCard } from "@/components/law-card";
 import { useCustomLaws, AddLawDialog } from "@/components/add-law-dialog";
-import { CATEGORY_SECTION_COLORS } from "@/lib/colors";
+import { CATEGORY_ORDER, categorySectionClass } from "@/lib/colors";
 
 const filterTabs: { label: string; value: LawCategory | "전체" }[] = [
   { label: "전체", value: "전체" },
-  ...CATEGORIES.map((c) => ({ label: c.label, value: c.value })),
+  ...CATEGORY_ORDER.map((c) => ({ label: c, value: c })),
 ];
 
 export default function LawsPage() {
@@ -29,7 +29,7 @@ export default function LawsPage() {
 
   // 카테고리별 그룹핑 (CATEGORIES 순서 유지)
   const grouped = useMemo(() => {
-    const categoryOrder = CATEGORIES.map((c) => c.value);
+    const categoryOrder = CATEGORY_ORDER;
     const groups: { category: LawCategory; laws: typeof filtered }[] = [];
     for (const cat of categoryOrder) {
       const laws = filtered.filter((l) => l.category === cat);
@@ -48,11 +48,13 @@ export default function LawsPage() {
   const showGroupHeaders = activeCategory === "전체" && !search.trim();
 
   return (
-    <div className="space-y-6 px-4 sm:px-0">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">법령 목록</h1>
-          <p className="text-slate-600 dark:text-slate-400">IT 관련 주요 법령을 탐색하세요.</p>
+          <h1 className="text-[23px] font-semibold tracking-tight">법령 목록</h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            IT 관련 주요 법령을 분야별로 탐색합니다.
+          </p>
         </div>
         <AddLawDialog onAdd={addCustomLaw} />
       </div>
@@ -69,10 +71,11 @@ export default function LawsPage() {
             <button
               key={cat.value}
               onClick={() => setActiveCategory(cat.value)}
-              className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+              aria-pressed={activeCategory === cat.value}
+              className={`rounded-full border px-3 py-1.5 text-[13px] transition-colors ${
                 activeCategory === cat.value
-                  ? "bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-slate-900 dark:border-slate-100"
-                  : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-400"
+                  ? "border-primary/30 bg-primary-soft font-medium text-primary"
+                  : "bg-card text-muted-foreground hover:border-border-strong hover:bg-muted hover:text-foreground"
               }`}
             >
               {cat.label}
@@ -85,11 +88,11 @@ export default function LawsPage() {
         <div className="space-y-8">
           {grouped.map(({ category, laws }) => (
             <section key={category}>
-              <h2 className={`text-sm font-semibold uppercase tracking-wider mb-3 pl-1 border-l-4 pl-3 ${CATEGORY_SECTION_COLORS[category] ?? "border-slate-400 text-slate-600 dark:text-slate-400"}`}>
+              <h2 className={`mb-3 border-l-2 pl-3 text-[15px] font-semibold tracking-tight ${categorySectionClass(category)}`}>
                 {category}
-                <span className="ml-2 text-xs font-normal text-muted-foreground">{laws.length}건</span>
+                <span className="ml-2 text-xs font-normal text-faint">{laws.length}건</span>
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {laws.map((law) => (
                   <div key={law.id} className="relative group">
                     <LawCard law={law} />
@@ -97,7 +100,7 @@ export default function LawsPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.preventDefault(); removeCustomLaw(law.id); }}
-                        className="absolute top-2 right-2 px-2 py-0.5 text-xs rounded bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                        className="absolute top-2 right-2 rounded bg-destructive px-2 py-0.5 text-xs text-background opacity-0 transition-opacity group-hover:opacity-100"
                       >
                         삭제
                       </button>
@@ -109,7 +112,7 @@ export default function LawsPage() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((law) => (
             <div key={law.id} className="relative group">
               <LawCard law={law} />
@@ -117,7 +120,7 @@ export default function LawsPage() {
                 <button
                   type="button"
                   onClick={(e) => { e.preventDefault(); removeCustomLaw(law.id); }}
-                  className="absolute top-2 right-2 px-2 py-0.5 text-xs rounded bg-red-500/90 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  className="absolute top-2 right-2 rounded bg-destructive px-2 py-0.5 text-xs text-background opacity-0 transition-opacity group-hover:opacity-100"
                 >
                   삭제
                 </button>
@@ -125,7 +128,7 @@ export default function LawsPage() {
             </div>
           ))}
           {filtered.length === 0 && (
-            <p className="col-span-full text-center text-slate-500 dark:text-slate-400 py-12">
+            <p className="col-span-full py-12 text-center text-sm text-muted-foreground">
               검색 결과가 없습니다.
             </p>
           )}

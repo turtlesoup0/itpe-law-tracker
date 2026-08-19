@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CategoryBadge } from "@/components/category-badge";
 import { getLawById } from "@/lib/laws-data";
+import { getPendingEnforcementDate } from "@/lib/utils/law-constants";
 import { getMockArticles, getMockAmendments, getMockThreeTier } from "@/lib/mcp/mock-data";
 import { AmendmentTimeline } from "@/components/amendment-timeline";
 import { LawHierarchyGraph } from "@/components/law-hierarchy-graph";
@@ -41,9 +42,10 @@ export default async function LawDetailPage({
   const relatedLaws = getRelatedLaws(lawId);
   const relatedGuidelines = getRelatedGuidelines(lawId);
   const manifestMeta = getManifestMeta();
+  const pendingDate = getPendingEnforcementDate(law);
 
   return (
-    <div className="space-y-6 px-4 sm:px-0">
+    <div className="space-y-6">
       <div className="flex items-center gap-4">
         <Link href="/laws">
           <Button variant="ghost" size="sm">
@@ -54,14 +56,24 @@ export default async function LawDetailPage({
 
       <div>
         <div className="flex flex-wrap items-center gap-3 mb-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
-            {law.shortName}
-          </h1>
+          <h1 className="text-[23px] font-semibold tracking-tight">{law.shortName}</h1>
           <CategoryBadge category={law.category} />
         </div>
-        <p className="text-slate-600 dark:text-slate-400">{law.name}</p>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{law.description}</p>
+        <p className="text-sm text-muted-foreground">{law.name}</p>
+        <p className="mt-1 text-[13px] text-faint">{law.description}</p>
       </div>
+
+      {pendingDate && (
+        <div className="rounded-lg border border-warning/35 bg-warning/8 p-4">
+          <p className="text-sm font-semibold text-warning">
+            아직 시행되지 않은 법령입니다 — {pendingDate} 시행 예정
+          </p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            공포는 되었으나 현재 효력이 없습니다. 아래 조문은 시행예정본이며, 시행일 전
+            개정으로 내용이 달라질 수 있습니다. 현행 법률관계의 근거로 인용하지 마세요.
+          </p>
+        </div>
+      )}
 
       <Tabs defaultValue="hierarchy" className="w-full">
         <TabsList className="overflow-x-auto w-full justify-start sm:justify-center">
@@ -85,7 +97,7 @@ export default async function LawDetailPage({
             <ArticleViewer articles={articles} lawName={law.shortName} />
           ) : (
             <Card>
-              <CardContent className="py-12 text-center text-slate-500 dark:text-slate-400">
+              <CardContent className="py-12 text-center text-muted-foreground">
                 등록된 조문 데이터가 없습니다.
               </CardContent>
             </Card>
@@ -107,7 +119,7 @@ export default async function LawDetailPage({
             </Card>
           ) : (
             <Card>
-              <CardContent className="py-12 text-center text-slate-500 dark:text-slate-400">
+              <CardContent className="py-12 text-center text-muted-foreground">
                 이 법령의 3단 비교 데이터가 아직 준비되지 않았습니다.
               </CardContent>
             </Card>

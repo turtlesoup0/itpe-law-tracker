@@ -49,11 +49,11 @@ export function TtaTermWidget() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="IT 용어 검색 (예: 클라우드, 인공지능)"
-            className="flex-1 px-3 py-2 text-sm border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 rounded-lg border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
           />
           <button
             type="submit"
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors shrink-0"
+            className="shrink-0 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
           >
             검색
           </button>
@@ -65,7 +65,7 @@ export function TtaTermWidget() {
             <button
               key={term}
               onClick={() => doSearch(term)}
-              className="px-2.5 py-1 text-xs rounded-full border bg-muted/50 text-muted-foreground hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 dark:hover:bg-blue-950 dark:hover:text-blue-300 transition-colors"
+              className="rounded-full border bg-muted/50 px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:border-primary/35 hover:bg-primary-soft hover:text-primary"
             >
               {term}
             </button>
@@ -102,7 +102,7 @@ export function TtaTermWidget() {
               href={`https://terms.tta.or.kr/dictionary/searchList.do`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline"
+              className="text-xs text-primary hover:underline"
             >
               TTA 정보통신용어사전에서 전체 보기 →
             </a>

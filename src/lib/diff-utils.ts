@@ -12,11 +12,11 @@ export function highlightDiff(
   if (!oldText)
     return {
       oldHtml: "",
-      newHtml: `<span class="bg-green-200 dark:bg-green-800/60 underline">${escapeHtml(newText)}</span>`,
+      newHtml: `<span class="bg-success/25 underline">${escapeHtml(newText)}</span>`,
     };
   if (!newText)
     return {
-      oldHtml: `<span class="bg-red-200 dark:bg-red-800/60 line-through">${escapeHtml(oldText)}</span>`,
+      oldHtml: `<span class="bg-destructive/25 line-through">${escapeHtml(oldText)}</span>`,
       newHtml: "",
     };
 
@@ -36,9 +36,9 @@ export function highlightDiff(
       newHtml += escapeHtml(nw);
     } else {
       if (ow)
-        oldHtml += `<span class="bg-red-200 dark:bg-red-800/60 line-through rounded px-0.5">${escapeHtml(ow)}</span>`;
+        oldHtml += `<span class="bg-destructive/25 line-through rounded px-0.5">${escapeHtml(ow)}</span>`;
       if (nw)
-        newHtml += `<span class="bg-green-200 dark:bg-green-800/60 underline rounded px-0.5">${escapeHtml(nw)}</span>`;
+        newHtml += `<span class="bg-success/25 underline rounded px-0.5">${escapeHtml(nw)}</span>`;
     }
   }
 
